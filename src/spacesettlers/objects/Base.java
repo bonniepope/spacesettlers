@@ -96,7 +96,7 @@ public class Base extends SpaceSettlersActionableObject {
 	
 
 	/**
-	 * Get the team money turned in so far (unspent)
+	 * Get the team resourcesAvailable turned in so far (unspent)
 	 * @return
 	 */
 	public int getMoney() {
@@ -128,7 +128,7 @@ public class Base extends SpaceSettlersActionableObject {
 	}
 
 	/**
-	 * Change the money amount by the specified amount
+	 * Change the resourcesAvailable amount by the specified amount
 	 * @param difference
 	 */
 	public void incrementMoney(int difference) {

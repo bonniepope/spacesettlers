@@ -98,7 +98,7 @@ public class ShipGraphics extends SpacewarGraphics {
                 (int) (drawLocation.getX() + ship.getPosition().getTranslationalVelocityX()),
                 (int) (drawLocation.getY() + ship.getPosition().getTranslationalVelocityY()));
 
-        // draw the money
+        // draw the resourcesAvailable
         number = Integer.toString(ship.getMoney());
         graphics.setPaint(idColor);
         graphics.drawString(number, (int) drawLocation.getX() - 24, (int) drawLocation.getY() + 12);

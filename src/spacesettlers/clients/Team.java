@@ -74,7 +74,7 @@ public class Team {
 	double score;
 	
 	/**
-	 * available (unspent) money from the asteroids and the total money earned
+	 * available (unspent) resourcesAvailable from the asteroids and the total resourcesAvailable earned
 	 */
 	int availableMoney, totalMoney;
 	
@@ -483,7 +483,7 @@ public class Team {
 	
 	/**
 	 * Ask the team if they want to purchase anything this turn.  You can only 
-	 * purchase one item per turn and only if you have enough money.
+	 * purchase one item per turn and only if you have enough resourcesAvailable.
 	 * 
 	 * @param space
 	 * @return

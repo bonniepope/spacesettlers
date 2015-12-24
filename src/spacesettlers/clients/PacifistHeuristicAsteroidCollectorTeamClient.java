@@ -93,7 +93,7 @@ public class PacifistHeuristicAsteroidCollectorTeamClient extends TeamClient {
 			return newAction;
 		}
 
-		// if the ship has enough money, take it back to base
+		// if the ship has enough resourcesAvailable, take it back to base
 		if (ship.getMoney() > 500) {
 			Base base = findNearestBase(space, ship);
 			SpaceSettlersAction newAction = new MoveToObjectAction(space, currentPosition, base);
@@ -169,8 +169,8 @@ public class PacifistHeuristicAsteroidCollectorTeamClient extends TeamClient {
 
 		for (Asteroid asteroid : asteroids) {
 			if (!asteroidToShipMap.containsKey(asteroid)) {
-				if (asteroid.isMineable() && asteroid.getMoney() > bestMoney) {
-					bestMoney = asteroid.getMoney();
+				if (asteroid.isMineable() && asteroid.getResourcesAvailable() > bestMoney) {
+					bestMoney = asteroid.getResourcesAvailable();
 					bestAsteroid = asteroid;
 				}
 			}
@@ -275,7 +275,7 @@ public class PacifistHeuristicAsteroidCollectorTeamClient extends TeamClient {
 
 	@Override
 	/**
-	 * If there is enough money, buy a base.  Place it by finding a ship that is sufficiently
+	 * If there is enough resourcesAvailable, buy a base.  Place it by finding a ship that is sufficiently
 	 * far away from the existing bases
 	 */
 	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,

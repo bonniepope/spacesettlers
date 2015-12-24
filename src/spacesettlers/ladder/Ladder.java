@@ -15,7 +15,7 @@ import spacesettlers.configs.AsteroidConfig;
 import spacesettlers.configs.BaseConfig;
 import spacesettlers.configs.HighLevelTeamConfig;
 import spacesettlers.configs.LadderConfig;
-import spacesettlers.configs.SpacewarConfig;
+import spacesettlers.configs.SpaceSettlersConfig;
 import spacesettlers.simulator.SimulatorException;
 import spacesettlers.simulator.SpaceSettlersSimulator;
 
@@ -32,7 +32,7 @@ public class Ladder {
 
 	SpaceSettlersSimulator simulator;
 
-	SpacewarConfig simConfig;
+	SpaceSettlersConfig simConfig;
 
 	JSAPResult parserConfig;
 
@@ -72,13 +72,13 @@ public class Ladder {
 		String configFile = parserConfig.getString("configPath") + parserConfig.getString("simulatorConfigFile");
 
 		XStream xstream = new XStream();
-		xstream.alias("SpacewarConfig", SpacewarConfig.class);
+		xstream.alias("SpaceSettlersConfig", SpaceSettlersConfig.class);
 		xstream.alias("HighLevelTeamConfig", HighLevelTeamConfig.class);
 		xstream.alias("BaseConfig", BaseConfig.class);
 		xstream.alias("AsteroidConfig", AsteroidConfig.class);
 
 		try { 
-			simConfig = (SpacewarConfig) xstream.fromXML(new File(configFile));
+			simConfig = (SpaceSettlersConfig) xstream.fromXML(new File(configFile));
 		} catch (Exception e) {
 			throw new SimulatorException("Error parsing config file at string " + e.getMessage());
 		}

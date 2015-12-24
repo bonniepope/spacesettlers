@@ -29,6 +29,7 @@ public class JSpaceSettlersComponent extends JComponent {
     public static final Color TEXT_COLOR = new Color(0, 218, 159);
     public static final Font FONT12 = new Font("Arial", Font.BOLD, 12);
     public static final Font FONT10 = new Font("Arial", Font.BOLD, 10);
+    public static final Font FONT8 = new Font("Arial", Font.BOLD, 8);
     
     public static final BasicStroke THIN_STROKE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     public static final BasicStroke STROKE = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);

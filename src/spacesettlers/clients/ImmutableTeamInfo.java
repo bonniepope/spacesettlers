@@ -19,7 +19,7 @@ public class ImmutableTeamInfo {
 	String teamName;
 	
 	/**
-	 * available (unspent) money from the asteroids and the total money earned
+	 * available (unspent) resourcesAvailable from the asteroids and the total resourcesAvailable earned
 	 */
 	int availableMoney, totalMoney;
 	

@@ -24,7 +24,7 @@ import spacesettlers.clients.TeamClient;
 import spacesettlers.configs.AsteroidConfig;
 import spacesettlers.configs.BaseConfig;
 import spacesettlers.configs.HighLevelTeamConfig;
-import spacesettlers.configs.SpacewarConfig;
+import spacesettlers.configs.SpaceSettlersConfig;
 import spacesettlers.configs.TeamClientConfig;
 import spacesettlers.gui.SpaceSettlersGUI;
 import spacesettlers.objects.Asteroid;
@@ -33,6 +33,7 @@ import spacesettlers.objects.Beacon;
 import spacesettlers.objects.Ship;
 import spacesettlers.objects.SpaceSettlersActionableObject;
 import spacesettlers.objects.SpaceSettlersObject;
+import spacesettlers.objects.SpaceSettlersResourcesEnum;
 import spacesettlers.powerups.SpaceSettlersPowerupEnum;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
@@ -85,7 +86,7 @@ public class SpaceSettlersSimulator {
 	/**
 	 * The configuration for this simulation
 	 */
-	SpacewarConfig simConfig;
+	SpaceSettlersConfig simConfig;
 
 	/**
 	 * The physics engine
@@ -156,7 +157,7 @@ public class SpaceSettlersSimulator {
 	 * @param parserConfig
 	 * @throws SimulatorException
 	 */
-	public SpaceSettlersSimulator(SpacewarConfig simConfig, JSAPResult parserConfig) throws SimulatorException {
+	public SpaceSettlersSimulator(SpaceSettlersConfig simConfig, JSAPResult parserConfig) throws SimulatorException {
 		// load in all the configuration
 		this.simConfig = simConfig;
 
@@ -220,20 +221,37 @@ public class SpaceSettlersSimulator {
 		// place the asteroids
 		AsteroidConfig asteroidConfig = simConfig.getAsteroids();
 		for (int a = 0; a < asteroidConfig.getNumberInitialAsteroids(); a++) {
+			// choose if the asteroid is mine-able
 			double prob = random.nextDouble();
 			boolean mineable = false;
 			if (prob < asteroidConfig.getProbabilityMineable()) {
 				mineable = true;
 			}
+			
+			// choose the radius
 			int radius = random.nextInt(Asteroid.MAX_ASTEROID_RADIUS - Asteroid.MIN_ASTEROID_RADIUS) + Asteroid.MIN_ASTEROID_RADIUS;
 
+			// choose if the asteroid is moving or stationary
 			prob = random.nextDouble();
 			boolean moveable = false;
 			if (prob < asteroidConfig.getProbabilityMoveable()) {
 				moveable = true;
 			}
 
-			Asteroid asteroid = new Asteroid(simulatedSpace.getRandomFreeLocation(random, radius * 2), mineable, radius, moveable);
+			// choose the asteroid type
+			prob = random.nextDouble();
+			SpaceSettlersResourcesEnum type;
+			if (prob <= asteroidConfig.getProbabilityFuelType()) {
+				type = SpaceSettlersResourcesEnum.FUEL;
+			} else if (prob <= (asteroidConfig.getProbabilityFuelType() + asteroidConfig.getProbabilityMetalsType())) {
+				type = SpaceSettlersResourcesEnum.METALS;
+			} else {
+				type = SpaceSettlersResourcesEnum.WATER;
+			}
+
+			// create the asteroid
+			Asteroid asteroid = new Asteroid(simulatedSpace.getRandomFreeLocation(random, radius * 2), 
+					mineable, radius, moveable, type);
 			simulatedSpace.addObject(asteroid);
 
 			if (asteroid.isMoveable()) {
@@ -424,17 +442,17 @@ public class SpaceSettlersSimulator {
 	 * @throws SimulatorException 
 	 * 
 	 */
-	public SpacewarConfig loadConfigFiles(JSAPResult parserConfig) throws SimulatorException {
+	public SpaceSettlersConfig loadConfigFiles(JSAPResult parserConfig) throws SimulatorException {
 		String configFile = parserConfig.getString("configPath") + parserConfig.getString("simulatorConfigFile");
 
 		XStream xstream = new XStream();
-		xstream.alias("SpaceSettlersConfig", SpacewarConfig.class);
+		xstream.alias("SpaceSettlersConfig", SpaceSettlersConfig.class);
 		xstream.alias("HighLevelTeamConfig", HighLevelTeamConfig.class);
 		xstream.alias("BaseConfig", BaseConfig.class);
 		xstream.alias("AsteroidConfig", AsteroidConfig.class);
 
 		try { 
-			simConfig = (SpacewarConfig) xstream.fromXML(new File(configFile));
+			simConfig = (SpaceSettlersConfig) xstream.fromXML(new File(configFile));
 		} catch (Exception e) {
 			throw new SimulatorException("Error parsing config file at string " + e.getMessage());
 		}
@@ -544,7 +562,7 @@ public class SpaceSettlersSimulator {
 		
 //		for (Team team : teams) {
 //			for (Ship ship : team.getShips()) {
-//				System.out.println("Ship " + ship.getTeamName() + ship.getId() + " has money " + ship.getMoney());
+//				System.out.println("Ship " + ship.getTeamName() + ship.getId() + " has resourcesAvailable " + ship.getMoney());
 //			}
 //		}
 	}
@@ -577,7 +595,7 @@ public class SpaceSettlersSimulator {
 		
 		for (UUID key : purchases.keySet()) {
 			SpaceSettlersPurchaseEnum purchase = purchases.get(key);
-			// skip the purchase if there isn't enough money
+			// skip the purchase if there isn't enough resourcesAvailable
 			if (team.getAvailableMoney() < team.getCurrentCost(purchase)) {
 				continue;
 			}

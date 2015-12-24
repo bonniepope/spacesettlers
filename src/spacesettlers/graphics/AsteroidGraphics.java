@@ -6,6 +6,7 @@ import java.awt.geom.Ellipse2D;
 
 import spacesettlers.gui.JSpaceSettlersComponent;
 import spacesettlers.objects.Asteroid;
+import spacesettlers.objects.SpaceSettlersResourcesEnum;
 import spacesettlers.utilities.Position;
 
 /**
@@ -16,10 +17,14 @@ import spacesettlers.utilities.Position;
 public class AsteroidGraphics extends SpacewarGraphics {
     public static final Color REGULAR_ASTEROID_COLOR = new Color(126, 96, 58);
     public static final Color REGULAR_LINE_COLOR = new Color(162, 124, 76);
-    public static final Color MINEABLE_ASTEROID_COLOR = new Color(192, 192, 192);
-    public static final Color MINEABLE_LINE_COLOR = new Color(211, 211, 211);
+    public static final Color WATER_ASTEROID_COLOR = new Color(0,191,255);
+    public static final Color WATER_LINE_COLOR = new Color(30,144,255);
+    public static final Color FUEL_ASTEROID_COLOR = new Color(0,255,0);
+    public static final Color FUEL_LINE_COLOR = new Color(50,205,50);
+    public static final Color METALS_ASTEROID_COLOR = new Color(192, 192, 192);
+    public static final Color METALS_LINE_COLOR = new Color(211, 211, 211);
     public static final Color MOVEABLE_LINE_COLOR = new Color(1, 124, 76);
-    public static final Color MONEY_COLOR = Color.BLACK;
+    public static final Color MONEY_COLOR = Color.WHITE;
 
     Asteroid asteroid;
     
@@ -39,29 +44,50 @@ public class AsteroidGraphics extends SpacewarGraphics {
 
         // show minable asteroids in a different color
         if (asteroid.isMineable()) {
-        	graphics.setColor(MINEABLE_ASTEROID_COLOR);
+        	switch (asteroid.getAsteroidType()) {
+        	case FUEL:
+        		graphics.setColor(FUEL_ASTEROID_COLOR);
+        		break;
+        	case WATER:
+        		graphics.setColor(WATER_ASTEROID_COLOR);
+        		break;
+        	case METALS:
+        		graphics.setColor(METALS_ASTEROID_COLOR);
+        	}
         } else {
         	graphics.setColor(REGULAR_ASTEROID_COLOR);
         }
         graphics.fill(shape);
 
+        /*
         // if the asteroid is moveable, give it a different color outline
         graphics.setStroke(JSpaceSettlersComponent.STROKE);
         if (asteroid.isMoveable()) {
         	graphics.setColor(MOVEABLE_LINE_COLOR);
         } else if (asteroid.isMineable()) {
-        	graphics.setColor(MINEABLE_LINE_COLOR);
+        	switch (asteroid.getAsteroidType()) {
+        	case FUEL:
+        		graphics.setColor(FUEL_LINE_COLOR);
+        		break;
+        	case WATER:
+        		graphics.setColor(WATER_LINE_COLOR);
+        		break;
+        	case METALS:
+        		graphics.setColor(METALS_LINE_COLOR);
+        	}
         } else {
         	graphics.setColor(REGULAR_LINE_COLOR);
         }
+        */
         graphics.draw(shape);
 
         
-        // put the money an asteroid can be mined for in the center of the asteroid
+        // put the resourcesAvailable an asteroid can be mined for in the center of the asteroid
         if (asteroid.isMineable()) {
-            graphics.setFont(JSpaceSettlersComponent.FONT10);
-        	graphics.setColor(MONEY_COLOR);
-        	graphics.drawString(Integer.toString(asteroid.getMoney()), (int)drawLocation.getX() - radius + 2, (int)drawLocation.getY());
+            //graphics.setFont(JSpaceSettlersComponent.FONT8);
+        	//graphics.setColor(MONEY_COLOR);
+        	//graphics.drawString(Integer.toString(asteroid.getResourcesAvailable()), 
+        	//		(int)drawLocation.getX() - radius + 2, (int)drawLocation.getY() - 6);
         }
         
 	}

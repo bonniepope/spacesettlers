@@ -116,11 +116,11 @@ public class CollisionHandler {
 			// it hit a ship
 			firingShip.incrementHits();
 
-			// if the bullet killed the ship, transfer the money
+			// if the bullet killed the ship, transfer the resourcesAvailable
 			if (ship.getEnergy() <= 0) {
-				//System.out.println("ship " + firingShip.getTeamName() + " stealing money " + shipMoney + " from " + ship.getTeamName() + ship.getId());
+				//System.out.println("ship " + firingShip.getTeamName() + " stealing resourcesAvailable " + shipMoney + " from " + ship.getTeamName() + ship.getId());
 				
-				// give the money to the ship that killed this one
+				// give the resourcesAvailable to the ship that killed this one
 				firingShip.updateMoney(shipMoney);
 				
 				// it killed a ship
@@ -221,8 +221,8 @@ public class CollisionHandler {
 		// if a ship ran into it, it "mines" the asteroid
 		if (object.getClass() == Ship.class) {
 			Ship ship = (Ship) object;
-			ship.updateMoney(asteroid.getMoney());
-			//System.out.println("ship " + ship.getTeamName() + ship.getId() +" now has money " + ship.getMoney());
+			ship.updateMoney(asteroid.getResourcesAvailable());
+			//System.out.println("ship " + ship.getTeamName() + ship.getId() +" now has resourcesAvailable " + ship.getMoney());
 		}
 		
 		// anything that runs into a mineable asteroids makes it disappear 
@@ -277,7 +277,7 @@ public class CollisionHandler {
 				ship.updateEnergy(base.getHealingEnergy());
 				double energyChange = ship.getEnergy() - origEnergy;
 				base.updateEnergy(-(int)energyChange);
-				//System.out.println("ship " + ship.getTeamName() + ship.getId() + " left money at base and now has money " + ship.getMoney());
+				//System.out.println("ship " + ship.getTeamName() + ship.getId() + " left resourcesAvailable at base and now has resourcesAvailable " + ship.getMoney());
 			}
 		}
 	}

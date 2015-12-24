@@ -11,7 +11,7 @@ import java.util.UUID;
 import spacesettlers.actions.DoNothingAction;
 import spacesettlers.actions.SpaceSettlersAction;
 import spacesettlers.clients.ImmutableTeamInfo;
-import spacesettlers.configs.SpacewarConfig;
+import spacesettlers.configs.SpaceSettlersConfig;
 import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Beacon;
@@ -113,7 +113,7 @@ public class Toroidal2DPhysics {
 	 * Constructor for the regular game
 	 * @param simConfig
 	 */
-	public Toroidal2DPhysics(SpacewarConfig simConfig) { 
+	public Toroidal2DPhysics(SpaceSettlersConfig simConfig) { 
 		height = simConfig.getHeight();
 		width = simConfig.getWidth();
 		halfHeight = height / 2.0f;
@@ -395,7 +395,7 @@ public class Toroidal2DPhysics {
 	 * 
 	 * @param location1
 	 * @param location2
-	 * @return
+	 * @return shortest distance vector pointing from location1 to location2
 	 */
 	public Vector2D findShortestDistanceVector(Position location1, Position location2) {
 		return findShortestDistanceVector(location1, location2, width, height, halfWidth, halfHeight);
@@ -409,7 +409,7 @@ public class Toroidal2DPhysics {
 	 * 
 	 * @param location1
 	 * @param location2
-	 * @return
+	 * @return shortest distance length (magnitude of the vector pointing from location1 to location2)
 	 */
 	public double findShortestDistance(Position location1, Position location2) {
 		Vector2D shortDist = findShortestDistanceVector(location1, location2, width, height, halfWidth, halfHeight);

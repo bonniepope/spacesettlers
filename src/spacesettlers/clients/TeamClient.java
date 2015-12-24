@@ -116,11 +116,11 @@ abstract public class TeamClient {
 	
 	/**
 	 * Called once per turn to see if the team wants to purchase anything with its
-	 * existing money.  Can only purchase one item per turn.
+	 * existing resourcesAvailable.  Can only purchase one item per turn.
 	 * 
 	 * @param space
 	 * @param actionableObjects
-	 * @param money how much money you have
+	 * @param resourcesAvailable how much resourcesAvailable you have
 	 * @param clonedPurchaseCost how much each type of purchase currently costs for this team
 	 * @return
 	 */

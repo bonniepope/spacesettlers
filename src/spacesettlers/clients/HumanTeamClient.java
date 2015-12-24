@@ -6,6 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,7 +19,9 @@ import spacesettlers.actions.RawAction;
 import spacesettlers.actions.SpaceSettlersAction;
 import spacesettlers.actions.SpaceSettlersPurchaseEnum;
 import spacesettlers.graphics.CircleGraphics;
+import spacesettlers.graphics.LineGraphics;
 import spacesettlers.graphics.SpacewarGraphics;
+import spacesettlers.graphics.StarGraphics;
 import spacesettlers.objects.Ship;
 import spacesettlers.objects.SpaceSettlersActionableObject;
 import spacesettlers.objects.SpaceSettlersObject;
@@ -69,12 +72,19 @@ public class HumanTeamClient extends TeamClient {
 	 */
 	public double CLICK_DISTANCE = 5;
 	
+	/**
+	 * graphics to add in each step (if graphics are on, otherwise it is ignored)
+	 */
+	private ArrayList<SpacewarGraphics> graphicsToAdd;
+	
+	
 	@Override
 	public void initialize(Toroidal2DPhysics space) {
 		humanKeyListener = new HumanClientKeyListener();
 		humanMouseListener = new HumanMouseListener();
 		lastMouseClick = null;
 		mouseClickMove = null;
+		graphicsToAdd = new ArrayList<SpacewarGraphics>();
 	}
 
 	@Override
@@ -123,6 +133,13 @@ public class HumanTeamClient extends TeamClient {
 				if (lastMouseClick != null) {
 					if (mouseClickMove == null || mouseClickMove.isMovementFinished(space) || space.findShortestDistance(lastMouseClick, myPosition) > CLICK_DISTANCE) {
 						mouseClickMove = new MoveAction(space, myPosition, lastMouseClick);
+						
+						graphicsToAdd.add(new StarGraphics(3, super.teamColor, lastMouseClick));
+						LineGraphics line = new LineGraphics(myPosition, lastMouseClick, 
+								space.findShortestDistanceVector(myPosition, lastMouseClick));
+						line.setLineColor(super.teamColor);
+						graphicsToAdd.add(line);
+						
 					}
 					actions.put(actionable.getId(), mouseClickMove);
 				} else {
@@ -157,19 +174,14 @@ public class HumanTeamClient extends TeamClient {
 	@Override
 	public Set<SpacewarGraphics> getGraphics() {
 		HashSet<SpacewarGraphics> graphics = new HashSet<SpacewarGraphics>();
-		
-		if (lastMouseClick != null) {
-			graphics.add(new CircleGraphics(5, super.teamColor, lastMouseClick));
-		}
-		
+		graphics.addAll(graphicsToAdd);
+		graphicsToAdd.clear();
 		return graphics;
-		
-		
 	}
 
 	@Override
 	/**
-	 * Do nothing never purchases
+	 * Human purchases (right now it never purchases)
 	 */
 	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,
 			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts) {

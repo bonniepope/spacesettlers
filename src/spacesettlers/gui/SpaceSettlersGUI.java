@@ -18,7 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import spacesettlers.clients.Team;
-import spacesettlers.configs.SpacewarConfig;
+import spacesettlers.configs.SpaceSettlersConfig;
 import spacesettlers.simulator.SpaceSettlersSimulator;
 
 /**
@@ -43,11 +43,11 @@ public class SpaceSettlersGUI {
 	 * Make a new GUI
 	 * @param config
 	 */
-	public SpaceSettlersGUI(SpacewarConfig config, SpaceSettlersSimulator spacewarSimulator) {
+	public SpaceSettlersGUI(SpaceSettlersConfig config, SpaceSettlersSimulator spacewarSimulator) {
 		super();
 		this.spacewarSimulator = spacewarSimulator;
 		
-		mainFrame = new JFrame("Spacewar 2");
+		mainFrame = new JFrame("Space Settlers");
 		
 		infoPanel = new JPanel();
 		mainPanel = new JPanel();
@@ -59,14 +59,6 @@ public class SpaceSettlersGUI {
 		infoPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.LINE_AXIS));
 
-		// add the labels (we will change the text later)
-//        JLabel label = new JLabel("Timestep: ");
-//        label.setBackground(Color.GREEN);
-//        
-//        infoPanel.add(label);
-        
-
-		//infoPanel.add(Box.createRigidArea(new Dimension(0,5)));
 		mainPanel.add(mainComponent);
 		MyEmptyBorder myEmptyBorder = new MyEmptyBorder();
 		mainPanel.setBorder(myEmptyBorder);

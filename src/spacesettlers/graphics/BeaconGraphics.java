@@ -17,8 +17,8 @@ import spacesettlers.utilities.Position;
  *
  */
 public class BeaconGraphics extends SpacewarGraphics {
-    public static final Color BEACON_COLOR = Color.GREEN;
-    public static final Color BEACON_LINE_COLOR = new Color(55, 200, 55);
+    public static final Color BEACON_COLOR = Color.YELLOW;
+    public static final Color BEACON_LINE_COLOR = new Color(255,215,0);
 
     private final Beacon beacon;
 
@@ -40,6 +40,11 @@ public class BeaconGraphics extends SpacewarGraphics {
         g.setStroke(JSpaceSettlersComponent.THICK_STROKE);
         g.setColor(BEACON_LINE_COLOR);
         g.draw(shape);
+
+        // add an E to make it clear it is an energy beacon
+		g.setPaint(Color.BLACK);
+		g.drawString("E", (int) drawLocation.getX()-3, (int) drawLocation.getY() + 4);
+
     }
 
 	/**

@@ -291,5 +291,6 @@ public class MoveAction extends SpaceSettlersAction {
 		return isFinished;
 	}
 
+	
 
 }

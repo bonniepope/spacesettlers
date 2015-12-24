@@ -42,8 +42,8 @@ public class Ship extends SpaceSettlersActionableObject {
 	int lastRespawnCounter;
 
 	/**
-	 * Current money a ship is holding (from the mined asteroids).  Note the 
-	 * money has to be turned into the base before it can be used by the team.
+	 * Current resourcesAvailable a ship is holding (from the mined asteroids).  Note the 
+	 * resourcesAvailable has to be turned into the base before it can be used by the team.
 	 */
 	int money;
 
@@ -116,7 +116,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	}
 
 	/**
-	 * Get the current amount of money
+	 * Get the current amount of resourcesAvailable
 	 * @return
 	 */
 	public int getMoney() {
@@ -124,7 +124,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	}
 
 	/**
-	 * Change the money amount by the specified difference
+	 * Change the resourcesAvailable amount by the specified difference
 	 * @param difference
 	 */
 	public void updateMoney(int difference) {
@@ -132,7 +132,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	}
 
 	/**
-	 * Sets the money to 0
+	 * Sets the resourcesAvailable to 0
 	 */
 	public void resetMoney() {
 		money = 0;

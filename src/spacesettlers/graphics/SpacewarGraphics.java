@@ -1,7 +1,6 @@
 package spacesettlers.graphics;
 
 import java.awt.Graphics2D;
-
 import spacesettlers.utilities.Position;
 
 /**

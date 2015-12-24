@@ -10,6 +10,12 @@ public class AsteroidConfig {
 	double probabilityMoveable;
 	
 	double maxInitialVelocity;
+	
+	double probabilityFuelType;
+	
+	double probabilityWaterType;
+	
+	double probabilityMetalsType;
 
 	/**
 	 * @return the probabilityMineable
@@ -38,6 +44,18 @@ public class AsteroidConfig {
 
 	public double getMaxInitialVelocity() {
 		return maxInitialVelocity;
+	}
+
+	public double getProbabilityFuelType() {
+		return probabilityFuelType;
+	}
+
+	public double getProbabilityWaterType() {
+		return probabilityWaterType;
+	}
+
+	public double getProbabilityMetalsType() {
+		return probabilityMetalsType;
 	}
 	
 	
