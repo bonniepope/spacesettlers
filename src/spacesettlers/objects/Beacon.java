@@ -3,7 +3,7 @@ package spacesettlers.objects;
 import spacesettlers.graphics.BeaconGraphics;
 import spacesettlers.utilities.Position;
 
-public class Beacon extends SpaceSettlersObject {
+public class Beacon extends AbstractObject {
 	/**
 	 * The radius of a beacon
 	 */

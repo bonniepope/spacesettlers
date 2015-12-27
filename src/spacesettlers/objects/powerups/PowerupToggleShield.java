@@ -1,6 +1,6 @@
-package spacesettlers.powerups;
+package spacesettlers.objects.powerups;
 
-import spacesettlers.objects.SpaceSettlersActionableObject;
+import spacesettlers.objects.AbstractActionableObject;
 
 /**
  * Turns the shield on/off (applying this power up is a toggle)
@@ -15,7 +15,7 @@ public final class PowerupToggleShield implements SpaceSettlersPowerup {
 	 * Toggle the shield and if it is on, take the energy cost for using it
 	 */
 	@Override
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject) {
+	public void applyPowerup(AbstractActionableObject actionableObject) {
 		actionableObject.setShielded(!actionableObject.isShielded());
 
 		actionableObject.updateEnergy(-getCostToUse());

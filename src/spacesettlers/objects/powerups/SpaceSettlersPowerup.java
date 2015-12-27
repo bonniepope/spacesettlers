@@ -1,6 +1,6 @@
-package spacesettlers.powerups;
+package spacesettlers.objects.powerups;
 
-import spacesettlers.objects.SpaceSettlersActionableObject;
+import spacesettlers.objects.AbstractActionableObject;
 
 /**
  * All power ups need to implement this interface.  Some power ups may need
@@ -14,7 +14,7 @@ public interface SpaceSettlersPowerup {
 	 * Apply the power up to the object 
 	 * @param actionableObject
 	 */
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject);
+	public void applyPowerup(AbstractActionableObject actionableObject);
 	
 	/**
 	 * All power ups cost something to use

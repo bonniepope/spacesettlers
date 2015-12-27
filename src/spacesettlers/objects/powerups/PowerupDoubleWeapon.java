@@ -1,6 +1,6 @@
-package spacesettlers.powerups;
+package spacesettlers.objects.powerups;
 
-import spacesettlers.objects.SpaceSettlersActionableObject;
+import spacesettlers.objects.AbstractActionableObject;
 
 /**
  * Doubles a ship or base's weapons capacity (then
@@ -15,7 +15,7 @@ public final class PowerupDoubleWeapon implements SpaceSettlersPowerup {
 	 * Double the weapon capacity on the actionable object
 	 */
 	@Override
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject) {
+	public void applyPowerup(AbstractActionableObject actionableObject) {
 		actionableObject.setWeaponCapacity(actionableObject.getWeaponCapacity() * 2);
 		actionableObject.removePowerup(getType());
 	}

@@ -3,16 +3,21 @@ package spacesettlers.clients;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseCosts;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
+import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.simulator.Toroidal2DPhysics;
 
 /**
@@ -89,7 +94,8 @@ abstract public class TeamClient {
 	 * @param random random number generator
 	 * @return
 	 */
-	abstract public Map<UUID, SpaceSettlersAction> getMovementStart(Toroidal2DPhysics space, Set<SpaceSettlersActionableObject> actionableObjects);
+	abstract public Map<UUID, AbstractAction> getMovementStart(Toroidal2DPhysics space, 
+			Set<AbstractActionableObject> actionableObjects);
 	
 	/**
 	 * Called when actions end but before time advances.  Can be used to see
@@ -100,7 +106,7 @@ abstract public class TeamClient {
 	 * @param ships
 	 */
 	abstract public void getMovementEnd(Toroidal2DPhysics space, 
-			Set<SpaceSettlersActionableObject> actionableObjects);
+			Set<AbstractActionableObject> actionableObjects);
 	
 	/**
 	 * Called each time step to get the power up or weapon for each actionable object 
@@ -111,12 +117,12 @@ abstract public class TeamClient {
 	 * @return
 	 */
 	abstract public Map<UUID, SpaceSettlersPowerupEnum> getPowerups(Toroidal2DPhysics space, 
-			Set<SpaceSettlersActionableObject> actionableObjects);
+			Set<AbstractActionableObject> actionableObjects);
 
 	
 	/**
 	 * Called once per turn to see if the team wants to purchase anything with its
-	 * existing resourcesAvailable.  Can only purchase one item per turn.
+	 * existing currently available resources.  Can only purchase one item per turn.
 	 * 
 	 * @param space
 	 * @param actionableObjects
@@ -124,8 +130,10 @@ abstract public class TeamClient {
 	 * @param clonedPurchaseCost how much each type of purchase currently costs for this team
 	 * @return
 	 */
-	abstract public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space, 
-			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts);
+	abstract public Map<UUID, PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space, 
+			Set<AbstractActionableObject> actionableObjects, 
+			ResourcePile resourcesAvailable, 
+			PurchaseCosts purchaseCosts);
 	
 	/**
 	 * Called when the client is created

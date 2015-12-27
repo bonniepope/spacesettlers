@@ -9,7 +9,7 @@ import spacesettlers.utilities.Movement;
  * 
  * @author amy
  */
-public class DoNothingAction extends SpaceSettlersAction {
+public class DoNothingAction extends AbstractAction {
 	/**
 	 * This action never moves the ship
 	 */

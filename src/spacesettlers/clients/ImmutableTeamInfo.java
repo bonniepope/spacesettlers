@@ -1,5 +1,7 @@
 package spacesettlers.clients;
 
+import spacesettlers.objects.resources.ResourcePile;
+
 /**
  * Immutable class that holds the necessary team info to share with
  * other teams.
@@ -21,7 +23,7 @@ public class ImmutableTeamInfo {
 	/**
 	 * available (unspent) resourcesAvailable from the asteroids and the total resourcesAvailable earned
 	 */
-	int availableMoney, totalMoney;
+	ResourcePile availableResources, totalResources;
 	
 	/**
 	 * Keep track of the total beacons collected (for the ladder)
@@ -36,8 +38,8 @@ public class ImmutableTeamInfo {
 	public ImmutableTeamInfo(Team team) {
 		score = team.score;
 		teamName = team.teamName;
-		availableMoney = team.availableMoney;
-		totalMoney = team.totalMoney;
+		availableResources = team.availableResources;
+		totalResources = team.totalResources;
 		totalBeacons = team.totalBeacons;
 		ladderName = team.ladderName;
 	}
@@ -50,12 +52,12 @@ public class ImmutableTeamInfo {
 		return teamName;
 	}
 
-	public int getAvailableMoney() {
-		return availableMoney;
+	public ResourcePile getAvailableResources() {
+		return availableResources;
 	}
 
-	public int getTotalMoney() {
-		return totalMoney;
+	public ResourcePile getTotalResources() {
+		return totalResources;
 	}
 
 	public int getTotalBeacons() {

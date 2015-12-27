@@ -10,16 +10,16 @@ import spacesettlers.utilities.Position;
  * 
  * @author amy
  */
-abstract public class SpaceSettlersObject {
+abstract public class AbstractObject {
 	/**
 	 * Position of the object in the simulator space 
 	 */
-	Position position;
+	protected Position position;
 	
 	/**
 	 * The radius of the object
 	 */
-	int radius;
+	protected int radius;
 	
 	/**
 	 * The mass of the object
@@ -29,7 +29,7 @@ abstract public class SpaceSettlersObject {
 	/**
 	 * Is the object alive?  Some objects can never die but some can.
 	 */
-	boolean isAlive;
+	protected boolean isAlive;
 	
 	/**
 	 * Is the object currently drawable on the GUI?
@@ -40,27 +40,27 @@ abstract public class SpaceSettlersObject {
 	 * Is the object moveable?  Some objects can be flagged as not moveable and then
 	 * they will not move even if things bounce into them.
 	 */
-	boolean isMoveable;
+	protected boolean isMoveable;
 	
 	/**
 	 * The graphics for this object in the GUI
 	 */
-	SpacewarGraphics graphic;
+	protected SpacewarGraphics graphic;
 	
 	/**
 	 * Is the object controlled through actions?  Ships and teams are.
 	 */
-	boolean isControllable;
+	protected boolean isControllable;
 
 	/**
 	 * Id to track over cloning
 	 */
-	UUID id;
+	protected UUID id;
 	
 	/**
 	 * All objects start at rest
 	 */
-	public SpaceSettlersObject(int mass, int radius) {
+	public AbstractObject(int mass, int radius) {
 		this.mass = mass;
 		this.radius = radius;
 		position = new Position(0,0);
@@ -71,7 +71,7 @@ abstract public class SpaceSettlersObject {
 	/**
 	 * All objects start at rest
 	 */
-	public SpaceSettlersObject(int mass, int radius, Position position) {
+	public AbstractObject(int mass, int radius, Position position) {
 		this.mass = mass;
 		this.radius = radius;
 		this.position = position;
@@ -138,12 +138,20 @@ abstract public class SpaceSettlersObject {
 	
 	/**
 	 * Get the mass of the object
-	 * @return
+	 * @return the mass of the object
 	 */
 	public int getMass() {
 		return mass;
 	}
 
+	/**
+	 * Change the mass of the object to a new value
+	 * 
+	 * @param mass the new mass
+	 */
+	public void setMass(int mass) {
+		this.mass = mass;
+	}
 
 	/**
 	 * @return the graphic, which is what is drawn in the graphics window
@@ -208,7 +216,7 @@ abstract public class SpaceSettlersObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SpaceSettlersObject other = (SpaceSettlersObject) obj;
+		AbstractObject other = (AbstractObject) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -223,11 +231,11 @@ abstract public class SpaceSettlersObject {
 	 * 
 	 * @return
 	 */
-	abstract public SpaceSettlersObject deepClone();
+	abstract public AbstractObject deepClone();
 
 	@Override
 	public String toString() {
-		return "SpaceSettlersObject at " + position;
+		return "AbstractObject at " + position;
 	}
 	
 	/**

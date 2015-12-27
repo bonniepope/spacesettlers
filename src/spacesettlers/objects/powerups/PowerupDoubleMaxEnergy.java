@@ -1,6 +1,6 @@
-package spacesettlers.powerups;
+package spacesettlers.objects.powerups;
 
-import spacesettlers.objects.SpaceSettlersActionableObject;
+import spacesettlers.objects.AbstractActionableObject;
 
 /**
  * Double the maximum energy available on the actionable object
@@ -16,7 +16,7 @@ public final class PowerupDoubleMaxEnergy implements SpaceSettlersPowerup {
 	 * Double the max energy
 	 */
 	@Override
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject) {
+	public void applyPowerup(AbstractActionableObject actionableObject) {
 		actionableObject.setMaxEnergy(actionableObject.getMaxEnergy() * 2);
 		actionableObject.removePowerup(getType());
 	}

@@ -103,7 +103,6 @@ public class RunSimulator {
 		RunSimulator runSim = new RunSimulator(args);
 	
 		SpaceSettlersSimulator simulator = new SpaceSettlersSimulator(runSim.config);
-		
 		simulator.run();
 	}
 

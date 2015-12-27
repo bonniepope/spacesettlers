@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 
-import spacesettlers.objects.EMP;
-import spacesettlers.objects.Missile;
+import spacesettlers.objects.weapons.EMP;
+import spacesettlers.objects.weapons.Missile;
 import spacesettlers.utilities.Position;
 
 /**

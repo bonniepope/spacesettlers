@@ -1,11 +1,20 @@
 package spacesettlers.objects;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
-import spacesettlers.actions.SpaceSettlersAction;
+import spacesettlers.actions.AbstractAction;
 import spacesettlers.graphics.ShipGraphics;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
+import spacesettlers.objects.resources.ResourceTypes;
+import spacesettlers.objects.weapons.EMP;
+import spacesettlers.objects.weapons.Missile;
+import spacesettlers.objects.weapons.AbstractWeapon;
 import spacesettlers.utilities.Position;
 
 /**
@@ -13,7 +22,7 @@ import spacesettlers.utilities.Position;
  * 
  * @author amy
  */
-public class Ship extends SpaceSettlersActionableObject {
+public class Ship extends AbstractActionableObject {
 	public static final int SHIP_RADIUS = 15;
 	public static final int SHIP_MASS = 200;
 	public static final int SHIP_INITIAL_ENERGY = 5000;
@@ -24,7 +33,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	/**
 	 * The action the ship is currently executing
 	 */
-	SpaceSettlersAction currentAction;
+	AbstractAction currentAction;
 
 	/**
 	 * Time checks left until the ship can respawn
@@ -45,7 +54,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	 * Current resourcesAvailable a ship is holding (from the mined asteroids).  Note the 
 	 * resourcesAvailable has to be turned into the base before it can be used by the team.
 	 */
-	int money;
+	ResourcePile resources;
 
 	/**
 	 * The color for this team
@@ -75,7 +84,7 @@ public class Ship extends SpaceSettlersActionableObject {
 		numBeacons = 0;
 		energy = SHIP_INITIAL_ENERGY;
 		lastRespawnCounter = 0;
-		money = 0;
+		resources = new ResourcePile();
 		this.teamColor = teamColor;
 		numWeaponsInAir = 0;
 		maxEnergy = SHIP_MAX_ENERGY;
@@ -90,7 +99,8 @@ public class Ship extends SpaceSettlersActionableObject {
 		Ship newShip = new Ship(teamName, teamColor, getPosition().deepCopy());
 
 		newShip.setAlive(isAlive);
-		newShip.money = money;
+		newShip.resources = new ResourcePile();
+		newShip.addResources(resources);
 		newShip.lastRespawnCounter = lastRespawnCounter;
 		newShip.numBeacons = numBeacons;
 		newShip.energy = energy;
@@ -116,26 +126,37 @@ public class Ship extends SpaceSettlersActionableObject {
 	}
 
 	/**
-	 * Get the current amount of resourcesAvailable
-	 * @return
+	 * Add a new resource to the ships cargo bay
+	 * 
+	 * @param newResource new AbstractResource to add to the cargo bay
 	 */
-	public int getMoney() {
-		return money;
+	public void addResource(AbstractResource newResource) {
+		resources.add(newResource);
 	}
 
 	/**
-	 * Change the resourcesAvailable amount by the specified difference
-	 * @param difference
+	 * Add a list of new resources to the ships cargo bay
+	 * 
+	 * @param newResources new list of AbstractResource to add to the cargo bay
 	 */
-	public void updateMoney(int difference) {
-		money += difference;
+	public void addResources(ResourcePile newResources) {
+		resources.add(newResources);
+	}
+	
+	/**
+	 * Get the current available resources
+	 * 
+	 * @return the ResourcePile of resources held by this ship
+	 */
+	public ResourcePile getResources() {
+		return resources;
 	}
 
 	/**
-	 * Sets the resourcesAvailable to 0
+	 * Reset the list of resources (probably because the ship died)
 	 */
-	public void resetMoney() {
-		money = 0;
+	public void resetResources() {
+		resources.reset();
 	}
 	
 	/**
@@ -153,7 +174,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	 * 
 	 * @return a valid weapon or null if the ship is out of weapons at the moment
 	 */
-	public SpaceSettlersWeapon getNewWeapon(SpaceSettlersPowerupEnum weaponType) {
+	public AbstractWeapon getNewWeapon(SpaceSettlersPowerupEnum weaponType) {
 		if (numWeaponsInAir < weaponCapacity) {
 			Position weaponPosition = getPosition().deepCopy();
 			if (weaponType == SpaceSettlersPowerupEnum.FIRE_MISSILE) {
@@ -189,7 +210,7 @@ public class Ship extends SpaceSettlersActionableObject {
 		if (value == false) {
 			respawnCounter = Math.min(lastRespawnCounter + RESPAWN_INCREMENT, MAX_RESPAWN_INTERVAL);
 			lastRespawnCounter = respawnCounter; 
-			resetMoney();
+			resetResources();
 			resetPowerups();
 		} else {
 			resetEnergy();
@@ -227,7 +248,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	 * Get the action the ship is currently executing
 	 * @return
 	 */
-	public SpaceSettlersAction getCurrentAction() {
+	public AbstractAction getCurrentAction() {
 		return currentAction;
 	}
 
@@ -238,7 +259,7 @@ public class Ship extends SpaceSettlersActionableObject {
 	 * 
 	 * @param currentAction
 	 */
-	public void setCurrentAction(SpaceSettlersAction currentAction) {
+	public void setCurrentAction(AbstractAction currentAction) {
 		this.currentAction = currentAction;
 	}
 

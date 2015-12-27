@@ -1,4 +1,4 @@
-package spacesettlers.objects;
+package spacesettlers.objects.resources;
 
 /**
  * The types of resources mine-able from asteroids
@@ -6,7 +6,7 @@ package spacesettlers.objects;
  * @author amy
  *
  */
-public enum SpaceSettlersResourcesEnum {
+public enum ResourceTypes {
 	FUEL,
 	WATER,
 	METALS;

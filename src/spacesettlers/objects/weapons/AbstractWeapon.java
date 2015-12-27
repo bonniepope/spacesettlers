@@ -1,6 +1,8 @@
-package spacesettlers.objects;
+package spacesettlers.objects.weapons;
 
-import spacesettlers.powerups.SpaceSettlersPowerup;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.Ship;
+import spacesettlers.objects.powerups.SpaceSettlersPowerup;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
 
@@ -9,7 +11,7 @@ import spacesettlers.utilities.Vector2D;
  * 
  * @author amy
  */
-abstract public class SpaceSettlersWeapon extends SpaceSettlersObject implements SpaceSettlersPowerup {
+abstract public class AbstractWeapon extends AbstractObject implements SpaceSettlersPowerup {
 	/**
 	 * The amount of damage this weapon inflicts
 	 */
@@ -36,7 +38,7 @@ abstract public class SpaceSettlersWeapon extends SpaceSettlersObject implements
 	 * @param teamName Needed to ensure this weapon belongs to the ship that fired it
 	 * @param firingShipId Needed to ensure this weapon belongs to the ship that fired it
 	 */
-	public SpaceSettlersWeapon(int mass, int radius, Position position, int damage, int costToUse, Ship firingShip) {
+	public AbstractWeapon(int mass, int radius, Position position, int damage, int costToUse, Ship firingShip) {
 		super(mass, radius, position);
 		this.damage = damage;
 		this.costToUse = costToUse;

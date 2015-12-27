@@ -6,7 +6,7 @@ import java.awt.geom.Ellipse2D;
 
 import spacesettlers.gui.JSpaceSettlersComponent;
 import spacesettlers.objects.Asteroid;
-import spacesettlers.objects.SpaceSettlersResourcesEnum;
+import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.utilities.Position;
 
 /**
@@ -44,7 +44,7 @@ public class AsteroidGraphics extends SpacewarGraphics {
 
         // show minable asteroids in a different color
         if (asteroid.isMineable()) {
-        	switch (asteroid.getAsteroidType()) {
+        	switch (asteroid.getType()) {
         	case FUEL:
         		graphics.setColor(FUEL_ASTEROID_COLOR);
         		break;

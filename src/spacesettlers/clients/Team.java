@@ -5,6 +5,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -17,15 +18,19 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseCosts;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.simulator.SpaceSettlersSimulator;
 import spacesettlers.simulator.Toroidal2DPhysics;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
 
 /**
  * A team holds the ships and a pointer to the client
@@ -76,7 +81,7 @@ public class Team {
 	/**
 	 * available (unspent) resourcesAvailable from the asteroids and the total resourcesAvailable earned
 	 */
-	int availableMoney, totalMoney;
+	ResourcePile availableResources, totalResources;
 	
 	/**
 	 * Keep track of the total beacons collected (for the ladder)
@@ -92,7 +97,7 @@ public class Team {
 	 * The current costs for this team to buy items (some change
 	 * as you buy more and more of them)
 	 */
-	Map<SpaceSettlersPurchaseEnum, Integer> costToPurchase;
+	PurchaseCosts costToPurchase;
 	
 	/**
 	 * The maximum number of ships for this team
@@ -115,10 +120,11 @@ public class Team {
 		this.teamColor = teamClient.getTeamColor();
 		this.teamName = teamClient.getTeamName();
 		this.ladderName = ladderName;
-		costToPurchase = new HashMap<SpaceSettlersPurchaseEnum, Integer>();
+		costToPurchase = new PurchaseCosts();
 		resetCostToPurchase();
 		this.maxNumberShips = maxNumberShips;
-		
+		totalResources = new ResourcePile();
+		availableResources = new ResourcePile();
 		executor = null;
 	}
 	
@@ -126,9 +132,7 @@ public class Team {
 	 * Reset the costs to purchase new items
 	 */
 	private void resetCostToPurchase() {
-		for (SpaceSettlersPurchaseEnum purchase : SpaceSettlersPurchaseEnum.values()) {
-			costToPurchase.put(purchase, purchase.getInitialCost());
-		}
+		costToPurchase.reset();
 	}
 
 	/**
@@ -144,7 +148,9 @@ public class Team {
 		}
 		
 		newTeam.teamBaseIDs.addAll(this.teamBaseIDs);
-		newTeam.costToPurchase.putAll(costToPurchase);
+		newTeam.costToPurchase = costToPurchase.deepCopy();
+		newTeam.totalResources = new ResourcePile(totalResources);
+		newTeam.availableResources = new ResourcePile(availableResources);
 		return newTeam;
 	}
 	
@@ -156,27 +162,14 @@ public class Team {
 		return maxNumberShips;
 	}
 
-	/**
-	 * Make a cloned list of the team ships
-	 * 
-	 * @return
-	 */
-	private Set<Ship> getTeamShipsClone() {
-		Set<Ship> clonedShips = new HashSet<Ship>();
-		
-		for (Ship ship : teamShips) {
-			clonedShips.add(ship.deepClone());
-		}
-		return clonedShips;
-	}
 	
 	/**
 	 * Make a cloned list of the team's actionable objects (ships and bases)
 	 * 
 	 * @return
 	 */
-	private Set<SpaceSettlersActionableObject> getTeamActionableObjectsClone(Toroidal2DPhysics space) {
-		Set<SpaceSettlersActionableObject> clones = new HashSet<SpaceSettlersActionableObject>();
+	private Set<AbstractActionableObject> getTeamActionableObjectsClone(Toroidal2DPhysics space) {
+		Set<AbstractActionableObject> clones = new HashSet<AbstractActionableObject>();
 		
 		for (Ship ship : teamShips) {
 			clones.add(ship.deepClone());
@@ -287,66 +280,19 @@ public class Team {
 	}
 
 	/**
-	 * Get the current cost of the specified item
-	 * @return
+	 * Get the current cost of the specified type of item
+	 * 
+	 * @return the resources needed to purchase the specified item type
 	 */
-	public int getCurrentCost(SpaceSettlersPurchaseEnum item) {
-		return costToPurchase.get(item);
+	public ResourcePile getCurrentCost(PurchaseTypes type) {
+		return costToPurchase.getCost(type);
 	}
 
 	/**
-	 * Change the cost of an item (done after a purchase)
-	 * 
-	 * The new costs are embedded here rather than in the simulator to make
-	 * it easy to find (since they are stored here)
+	 * Double the cost of an item (done after a purchase)
 	 */
-	public void updateCost(SpaceSettlersPurchaseEnum item) {
-		int currentCost = costToPurchase.get(item);
-		switch (item) {
-		case BASE:
-			costToPurchase.put(item, currentCost * 2);
-			break;
-
-		case SHIP:
-			costToPurchase.put(item, currentCost * 2);
-			break;
-
-		case POWERUP_SHIELD:
-			// nothing
-			break;
-
-		case POWERUP_EMP_LAUNCHER:
-			// nothing
-			break;
-			
-		case POWERUP_MINE_LAUNCHER:
-			// nothing
-			break;
-			
-		case POWERUP_BASE_TURRET:
-			// nothing
-			break;
-
-		case POWERUP_HEAT_SEEKING_MISSILE_LAUNCHER:
-			// nothing
-			break;
-			
-		case POWERUP_DOUBLE_BASE_HEALING_SPEED:
-			costToPurchase.put(item, currentCost * 2);
-			break;
-			
-		case POWERUP_DOUBLE_MAX_ENERGY:
-			costToPurchase.put(item, currentCost * 2);
-			break;
-			
-		case POWERUP_DOUBLE_WEAPON_CAPACITY:
-			costToPurchase.put(item, currentCost * 2);
-			break;
-	
-		case NOTHING:
-			// nothing changes here
-		}
-		
+	public void updateCost(PurchaseTypes type) {
+		costToPurchase.doubleCosts(type);
 	}
 
 	/**
@@ -356,12 +302,12 @@ public class Team {
 	 * @param random
 	 * @return
 	 */
-	public Map<UUID, SpaceSettlersAction> getTeamMovementStart(Toroidal2DPhysics space) {
-        Map<UUID, SpaceSettlersAction> teamActions = new HashMap<UUID, SpaceSettlersAction>();
+	public Map<UUID, AbstractAction> getTeamMovementStart(Toroidal2DPhysics space) {
+        Map<UUID, AbstractAction> teamActions = new HashMap<UUID, AbstractAction>();
 
 		// ask the client for its movement
 		final Toroidal2DPhysics clonedSpace = space.deepClone();
-		final Set<SpaceSettlersActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
+		final Set<AbstractActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
 		
 		// if the previous thread call hasn't finished, then just return default
 		if (executor == null || executor.isTerminated()) {
@@ -370,16 +316,16 @@ public class Team {
 			return teamActions;
 		}
 		
-        Future<Map<UUID, SpaceSettlersAction>> future = executor.submit(
-        		new Callable<Map<UUID, SpaceSettlersAction>>(){
-        			public Map<UUID, SpaceSettlersAction> call() {
-        				Map<UUID, SpaceSettlersAction> teamActions = null;
+        Future<Map<UUID, AbstractAction>> future = executor.submit(
+        		new Callable<Map<UUID, AbstractAction>>(){
+        			public Map<UUID, AbstractAction> call() {
+        				Map<UUID, AbstractAction> teamActions = null;
         				try {
         					teamActions = teamClient.getMovementStart(clonedSpace, clonedActionableObjects);
         				} catch (Exception e) {
         					// we shouldn't do this but it seems necessary to make
         					// the agent behave (do nothing) if it crashes
-        		        	teamActions = new HashMap<UUID, SpaceSettlersAction>();
+        		        	teamActions = new HashMap<UUID, AbstractAction>();
         				}
         				return teamActions;
         			}
@@ -392,17 +338,17 @@ public class Team {
         } catch (TimeoutException e) {
             //was terminated
         	//return empty map, this will invoke default behavior of using DoNothingAction
-        	teamActions = new HashMap<UUID, SpaceSettlersAction>();
+        	teamActions = new HashMap<UUID, AbstractAction>();
         	System.out.println(getTeamName() + " timed out in getTeamMovementStart");
         } catch (InterruptedException e) {
         	//we were interrupted (should not happen but lets be good programmers) 
         	//return empty map, this will invoke default behavior of using DoNothingAction
-        	teamActions = new HashMap<UUID, SpaceSettlersAction>();
+        	teamActions = new HashMap<UUID, AbstractAction>();
 			e.printStackTrace();
 		} catch (ExecutionException e) {
 			//the executor threw and exception (should not happen but lets be good programmers) 
         	//return empty map, this will invoke default behavior of using DoNothingAction
-        	teamActions = new HashMap<UUID, SpaceSettlersAction>();
+        	teamActions = new HashMap<UUID, AbstractAction>();
 			e.printStackTrace();
 		} 
 
@@ -410,7 +356,7 @@ public class Team {
         
         return teamActions;
 		
-// 		HashMap<UUID, SpaceSettlersAction> teamActions = teamClient.getAction(clonedSpace, clonedTeamShips);
+// 		HashMap<UUID, AbstractAction> teamActions = teamClient.getAction(clonedSpace, clonedTeamShips);
 //		return teamActions;
 	}
 
@@ -423,7 +369,7 @@ public class Team {
 	 */
 	public void getTeamMovementEnd(Toroidal2DPhysics space) {
 		final Toroidal2DPhysics clonedSpace = space.deepClone();
-		final Set<SpaceSettlersActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
+		final Set<AbstractActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
 
 		// if the previous thread call hasn't finished, then just return default
 		if (executor == null || executor.isTerminated()) {
@@ -488,12 +434,12 @@ public class Team {
 	 * @param space
 	 * @return
 	 */
-	public Map<UUID,SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space) {
-        Map<UUID,SpaceSettlersPurchaseEnum> purchase = new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+	public Map<UUID,PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space) {
+        Map<UUID,PurchaseTypes> purchase = new HashMap<UUID,PurchaseTypes>();
 
 		final Toroidal2DPhysics clonedSpace = space.deepClone();
-		final Set<SpaceSettlersActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
-		final Map<SpaceSettlersPurchaseEnum, Integer> clonedPurchaseCost = getPurchaseCostClone();
+		final Set<AbstractActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
+		final PurchaseCosts clonedPurchaseCost = getPurchaseCostClone();
 		
         // if the previous thread call hasn't finished, then just return default
 		if (executor == null || executor.isTerminated()) {
@@ -503,11 +449,11 @@ public class Team {
 		}
 
 		//System.out.println("exec " + executor.isTerminated());
-        Future<Map<UUID,SpaceSettlersPurchaseEnum>> future = executor.submit(
-        		new Callable<Map<UUID,SpaceSettlersPurchaseEnum>>(){
-        			public Map<UUID,SpaceSettlersPurchaseEnum> call() throws Exception {
+        Future<Map<UUID,PurchaseTypes>> future = executor.submit(
+        		new Callable<Map<UUID,PurchaseTypes>>(){
+        			public Map<UUID,PurchaseTypes> call() throws Exception {
         				return teamClient.getTeamPurchases(clonedSpace, 
-        						clonedActionableObjects, availableMoney, clonedPurchaseCost);
+        						clonedActionableObjects, availableResources, clonedPurchaseCost);
         			}
         		});
         
@@ -519,16 +465,16 @@ public class Team {
             //was terminated
         	//return empty map, don't buy anything
         	System.out.println(getTeamName() + " timed out in getTeamPurchases");
-        	purchase = new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+        	purchase = new HashMap<UUID,PurchaseTypes>();
         } catch (InterruptedException e) {
         	//we were interrupted (should not happen but lets be good programmers) 
         	//return empty map, don't buy anything
-        	purchase = new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+        	purchase = new HashMap<UUID,PurchaseTypes>();
 			e.printStackTrace();
 		} catch (ExecutionException e) {
 			//the executor threw and exception (should not happen but lets be good programmers) 
         	//return empty map, don't buy anything
-        	purchase = new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+        	purchase = new HashMap<UUID,PurchaseTypes>();
 			e.printStackTrace();
 		} catch (RejectedExecutionException e) {
 			System.out.println("exec" + executor.isTerminated());
@@ -544,10 +490,8 @@ public class Team {
 	 * Clones the purchase cost map so the client can't modify it
 	 * @return
 	 */
-	private Map<SpaceSettlersPurchaseEnum, Integer> getPurchaseCostClone() {
-		Map<SpaceSettlersPurchaseEnum, Integer> clonedCost = new HashMap<SpaceSettlersPurchaseEnum, Integer>();
-		clonedCost.putAll(costToPurchase);	
-		return clonedCost;
+	private PurchaseCosts getPurchaseCostClone() {
+		return costToPurchase.deepCopy();
 	}
 
 	/**
@@ -560,7 +504,7 @@ public class Team {
         Map<UUID, SpaceSettlersPowerupEnum> powerups = new HashMap<UUID,SpaceSettlersPowerupEnum>();
 
 		final Toroidal2DPhysics clonedSpace = space.deepClone();
-		final Set<SpaceSettlersActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
+		final Set<AbstractActionableObject> clonedActionableObjects = getTeamActionableObjectsClone(space);
 		
         // if the previous thread call hasn't finished, then just return default
 		if (executor == null || executor.isTerminated()) {
@@ -693,22 +637,44 @@ public class Team {
 		this.score = score;
 	}
 	
-	public void incrementTotalMoney(double difference) {
-		totalMoney += difference;
-	}
-
-	public int getTotalMoney() {
-		return totalMoney;
-	}
 	
-	public void incrementAvailableMoney(double difference) {
-		availableMoney += difference;
+	/**
+	 * Return the currently available resources
+	 * 
+	 * @return
+	 */
+	public ResourcePile getAvailableResources() {
+		return availableResources;
 	}
 
-	public int getAvailableMoney() {
-		return availableMoney;
+	/**
+	 * Increment the team's total resources
+	 * 
+	 * @param newResources a list of new resources for the team
+	 */
+	public void incrementTotalResources(ResourcePile newResources) {
+		totalResources.add(newResources);
 	}
 
+	/**
+	 * Increment the team's currently available resources (this is decremented through buying elsewhere)
+	 *  
+	 * @param newResources resources to add to the team's available set
+	 */
+	public void incrementAvailableResources(ResourcePile newResources) {
+		availableResources.add(newResources);
+	}
+
+	/**
+	 * Decrement the team's currently available resources (for purchasing or stealing)
+	 *  
+	 * @param removeResources resources to remove from the available pile
+	 */
+	public void decrementAvailableResources(ResourcePile removeResources) {
+		availableResources.subtract(removeResources);
+	}
+
+	
 	public int getTotalBeacons() {
 		return totalBeacons;
 	}
@@ -734,4 +700,35 @@ public class Team {
 		teamClient.shutDown(space.deepClone());
 	}
 
+	/**
+	 * Can the team afford the purchase?
+	 * 
+	 * @param type the type of purchase the team is considering
+	 * @return true if the team can afford it and false otherwise
+	 */
+	public boolean canAfford(PurchaseTypes type) {
+		return costToPurchase.canAfford(type, availableResources);
+	}
+
+	/**
+	 * Return the total of the resources collected so far 
+	 * (used for scoring, can be adjusted to be a weighted sum later)
+	 * 
+	 * @return the total of totalResources
+	 */
+	public double getSummedTotalResources() {
+		return (double) totalResources.getTotal();
+	}
+
+	/**
+	 * Return the individual total resources in the pile
+	 * 
+	 * @return
+	 */
+	public ResourcePile getTotalResources() {
+		return totalResources;
+	}
+
+	
+	
 }

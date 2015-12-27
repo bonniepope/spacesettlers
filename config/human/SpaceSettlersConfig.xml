@@ -14,8 +14,8 @@
 	     Set to a non-zero number to make repeatable games. -->
 	<randomSeed>0</randomSeed>
 
-	<!-- Scoring mechanism used for this game: Can be Money, Beacons, ... (more as we add them) -->
-	<scoringMethod>Money</scoringMethod>
+	<!-- Scoring mechanism used for this game: Can be Resources, Beacons, ... (more as we add them) -->
+	<scoringMethod>Resources</scoringMethod>
 
 	<!-- Specify the number of the beacons.  The locations are initialized randomly -->
 	<numBeacons>6</numBeacons>

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersWeapon;
+import spacesettlers.objects.weapons.AbstractWeapon;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Movement;
 
@@ -22,11 +22,11 @@ import spacesettlers.utilities.Movement;
  * 
  * @author amy
  */
-abstract public class SpaceSettlersAction {
+abstract public class AbstractAction {
 	/**
 	 * The weapon for this time step
 	 */
-	SpaceSettlersWeapon weapon;
+	AbstractWeapon weapon;
 
 	/**
 	 * All actions must return a movement in (x,y) and orientation space.
@@ -84,11 +84,11 @@ abstract public class SpaceSettlersAction {
 	 *
 	 */
 	class SpacewarActionCallable implements  Callable<Movement>{
-		private SpaceSettlersAction action;
+		private AbstractAction action;
 		private Toroidal2DPhysics space;
 		private Ship ship;
 		
-		SpacewarActionCallable(SpaceSettlersAction action, Toroidal2DPhysics space, Ship ship){
+		SpacewarActionCallable(AbstractAction action, Toroidal2DPhysics space, Ship ship){
 			this.action = action;
 			this.space = space;
 			this.ship = ship;

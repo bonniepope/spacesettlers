@@ -14,7 +14,7 @@ import spacesettlers.utilities.Vector2D;
  * @author amy
  *
  */
-public class RawAction extends SpaceSettlersAction {
+public class RawAction extends AbstractAction {
 	/**
 	 * The accelerations
 	 */

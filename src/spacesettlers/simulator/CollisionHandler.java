@@ -3,10 +3,10 @@ package spacesettlers.simulator;
 import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Beacon;
-import spacesettlers.objects.EMP;
-import spacesettlers.objects.Missile;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.weapons.EMP;
+import spacesettlers.objects.weapons.Missile;
 import spacesettlers.utilities.Vector2D;
 
 /**
@@ -36,7 +36,7 @@ public class CollisionHandler {
 	 * @param object2
 	 * @param space
 	 */
-	public void collide(SpaceSettlersObject object1, SpaceSettlersObject object2, Toroidal2DPhysics space) {
+	public void collide(AbstractObject object1, AbstractObject object2, Toroidal2DPhysics space) {
 		// if either object is a beacon, handle that (and don't elastically collide)
 		if (object1.getClass() == Beacon.class) {
 			beaconCollision((Beacon) object1, object2);
@@ -97,7 +97,7 @@ public class CollisionHandler {
 	 * @param object1
 	 * @param object2
 	 */
-	private void missileCollision(Missile missile, SpaceSettlersObject object2) {
+	private void missileCollision(Missile missile, AbstractObject object2) {
 		// get the ship that fired this
 		Ship firingShip = missile.getFiringShip();
 		firingShip.decrementWeaponCount();
@@ -105,8 +105,6 @@ public class CollisionHandler {
 		// did it hit a ship?
 		if (object2.getClass() == Ship.class) {
 			Ship ship = (Ship) object2;
-			
-			int shipMoney = ship.getMoney();
 			
 			// only take damage if not shielded
 			if (!ship.isShielded()) {
@@ -120,14 +118,8 @@ public class CollisionHandler {
 			if (ship.getEnergy() <= 0) {
 				//System.out.println("ship " + firingShip.getTeamName() + " stealing resourcesAvailable " + shipMoney + " from " + ship.getTeamName() + ship.getId());
 				
-				// give the resourcesAvailable to the ship that killed this one
-				firingShip.updateMoney(shipMoney);
-				
 				// it killed a ship
 				firingShip.incrementKills();
-				
-				// this should be done when the ship officially dies but be sure
-				ship.resetMoney();
 			}
 
 		}
@@ -162,7 +154,7 @@ public class CollisionHandler {
 	 * @param object1
 	 * @param object2
 	 */
-	private void EMPCollision(EMP emp, SpaceSettlersObject object2) {
+	private void EMPCollision(EMP emp, AbstractObject object2) {
 		// get the ship that fired
 		Ship firingShip = emp.getFiringShip();
 		firingShip.decrementWeaponCount();
@@ -212,7 +204,7 @@ public class CollisionHandler {
 	 * @param asteroid
 	 * @param object
 	 */
-	public void asteroidCollision(Asteroid asteroid, SpaceSettlersObject object) {
+	public void asteroidCollision(Asteroid asteroid, AbstractObject object) {
 		// if the asteroid isn't mineable, nothing changes
 		if (!asteroid.isMineable()) {
 			return;
@@ -221,7 +213,7 @@ public class CollisionHandler {
 		// if a ship ran into it, it "mines" the asteroid
 		if (object.getClass() == Ship.class) {
 			Ship ship = (Ship) object;
-			ship.updateMoney(asteroid.getResourcesAvailable());
+			ship.addResource(asteroid.getResource());
 			//System.out.println("ship " + ship.getTeamName() + ship.getId() +" now has resourcesAvailable " + ship.getMoney());
 		}
 		
@@ -249,7 +241,7 @@ public class CollisionHandler {
 	 * @param beacon
 	 * @param object
 	 */
-	public void beaconCollision(Beacon beacon, SpaceSettlersObject object) {
+	public void beaconCollision(Beacon beacon, AbstractObject object) {
 		// beacons die when they are touched (respawned elsewhere)
 		beacon.setAlive(false);
 
@@ -266,13 +258,13 @@ public class CollisionHandler {
 	 * @param base
 	 * @param object
 	 */
-	public void baseCollision(Base base, SpaceSettlersObject object) {
+	public void baseCollision(Base base, AbstractObject object) {
 		if (object.getClass() == Ship.class) {
 			Ship ship = (Ship) object;
 			
 			if (ship.getTeamName().equalsIgnoreCase(base.getTeamName())) {
-				base.incrementMoney(ship.getMoney());
-				ship.resetMoney();
+				base.addResources(ship.getResources());
+				ship.resetResources();
 				double origEnergy = ship.getEnergy();
 				ship.updateEnergy(base.getHealingEnergy());
 				double energyChange = ship.getEnergy() - origEnergy;
@@ -293,8 +285,8 @@ public class CollisionHandler {
 	 * @param object2 second object in the collision
 	 * @param space handle to space for distance calculations
 	 */
-	private void elasticCollision2D(SpaceSettlersObject object1,
-			SpaceSettlersObject object2, Toroidal2DPhysics space) {
+	private void elasticCollision2D(AbstractObject object1,
+			AbstractObject object2, Toroidal2DPhysics space) {
 		// get the masses
 		double m1 = object1.getMass();
 		double m2 = object2.getMass();
@@ -340,8 +332,8 @@ public class CollisionHandler {
 	 * @param object2 second object in the collision
 	 * @param space handle to space for distance calculations
 	 */
-	private void elasticCollision2DWithNonMoveableObject(SpaceSettlersObject movingObject,
-			SpaceSettlersObject stationaryObject, Toroidal2DPhysics space) {
+	private void elasticCollision2DWithNonMoveableObject(AbstractObject movingObject,
+			AbstractObject stationaryObject, Toroidal2DPhysics space) {
 		// get the masses
 		double m1 = movingObject.getMass();
 		double m2 = stationaryObject.getMass();
@@ -377,7 +369,7 @@ public class CollisionHandler {
 	 * 
 	 * @param object
 	 */
-	public void resetMovement(SpaceSettlersObject object) {
+	public void resetMovement(AbstractObject object) {
 		object.getPosition().setAngularVelocity(0);
 		object.getPosition().getTranslationalVelocity().reset();
 	}

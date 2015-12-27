@@ -20,7 +20,7 @@ import spacesettlers.utilities.Vector2D;
  * 
  * @author amy
  */
-public class MoveAction extends SpaceSettlersAction {
+public class MoveAction extends AbstractAction {
 	/**
 	 * If the acceleration is less than this number, the target is assumed to be reached
 	 */

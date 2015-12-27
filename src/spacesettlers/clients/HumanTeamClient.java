@@ -9,23 +9,27 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import spacesettlers.actions.DoNothingAction;
 import spacesettlers.actions.MoveAction;
+import spacesettlers.actions.PurchaseCosts;
 import spacesettlers.actions.RawAction;
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.CircleGraphics;
 import spacesettlers.graphics.LineGraphics;
 import spacesettlers.graphics.SpacewarGraphics;
 import spacesettlers.graphics.StarGraphics;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
@@ -65,7 +69,7 @@ public class HumanTeamClient extends TeamClient {
 	/**
 	 * The action to move to the last click
 	 */
-	SpaceSettlersAction mouseClickMove;
+	AbstractAction mouseClickMove;
 	
 	/**
 	 * Minimum distance clicks need to be apart before it will move the ship again
@@ -97,10 +101,10 @@ public class HumanTeamClient extends TeamClient {
 	 * Look at the last key pressed by the human and do its movement
 	 */
 	@Override
-	public Map<UUID, SpaceSettlersAction> getMovementStart(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
-		HashMap<UUID, SpaceSettlersAction> actions = new HashMap<UUID, SpaceSettlersAction>();
-		for (SpaceSettlersObject actionable : actionableObjects) {
+	public Map<UUID, AbstractAction> getMovementStart(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects) {
+		HashMap<UUID, AbstractAction> actions = new HashMap<UUID, AbstractAction>();
+		for (AbstractObject actionable : actionableObjects) {
 			if (actionable instanceof Ship) {
 				// get the current position
 				Ship ship = (Ship) actionable;
@@ -155,12 +159,12 @@ public class HumanTeamClient extends TeamClient {
 	}
 
 	@Override
-	public void getMovementEnd(Toroidal2DPhysics space, Set<SpaceSettlersActionableObject> actionableObjects) {
+	public void getMovementEnd(Toroidal2DPhysics space, Set<AbstractActionableObject> actionableObjects) {
 		// reset so the human has to press again to move again (otherwise
 		// it does strange things like fly when you don't tell it anything on
 		// acceleration!)
 		lastKeyPressed = HumanKeyPressed.NONE;
-		for (SpaceSettlersObject actionable : actionableObjects) {
+		for (AbstractObject actionable : actionableObjects) {
 			if (actionable instanceof Ship) {
 				Ship ship = (Ship) actionable;
 				if (!ship.isAlive()) {
@@ -181,21 +185,23 @@ public class HumanTeamClient extends TeamClient {
 
 	@Override
 	/**
-	 * Human purchases (right now it never purchases)
+	 * Human purchases (right now it never purchases, this will be added to the UI later)
 	 */
-	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts) {
+	public Map<UUID, PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects,
+			ResourcePile resourcesAvailable, 
+			PurchaseCosts purchaseCosts) {
 		// TODO Auto-generated method stub
-		return new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+		return new HashMap<UUID,PurchaseTypes>();
 	}
 
 	@Override
 	public Map<UUID, SpaceSettlersPowerupEnum> getPowerups(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
+			Set<AbstractActionableObject> actionableObjects) {
 		HashMap<UUID, SpaceSettlersPowerupEnum> powerUps = new HashMap<UUID, SpaceSettlersPowerupEnum>();
 
 		if (lastKeyPressed == HumanKeyPressed.FIRE) {
-			for (SpaceSettlersActionableObject actionableObject : actionableObjects){
+			for (AbstractActionableObject actionableObject : actionableObjects){
 				SpaceSettlersPowerupEnum powerup = SpaceSettlersPowerupEnum.FIRE_MISSILE;
 				powerUps.put(actionableObject.getId(), powerup);
 			}

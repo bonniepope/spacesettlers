@@ -1,17 +1,21 @@
 package spacesettlers.clients;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import spacesettlers.actions.DoNothingAction;
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.PurchaseCosts;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.simulator.Toroidal2DPhysics;
 /**
  * Bad client that infinite loops (used to test threading, don't run this one for real!)
@@ -32,10 +36,10 @@ public class InfiniteLoopTeamClient extends TeamClient {
 	}
 
 	@Override
-	public Map<UUID, SpaceSettlersAction> getMovementStart(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
-		HashMap<UUID, SpaceSettlersAction> actions = new HashMap<UUID, SpaceSettlersAction>();
-		for (SpaceSettlersObject actionable : actionableObjects) {
+	public Map<UUID, AbstractAction> getMovementStart(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects) {
+		HashMap<UUID, AbstractAction> actions = new HashMap<UUID, AbstractAction>();
+		for (AbstractObject actionable : actionableObjects) {
 				actions.put(actionable.getId(), new DoNothingAction());
 		}
 		
@@ -46,7 +50,7 @@ public class InfiniteLoopTeamClient extends TeamClient {
 	}
 
 	@Override
-	public void getMovementEnd(Toroidal2DPhysics space, Set<SpaceSettlersActionableObject> actionableObjects) {
+	public void getMovementEnd(Toroidal2DPhysics space, Set<AbstractActionableObject> actionableObjects) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -60,17 +64,19 @@ public class InfiniteLoopTeamClient extends TeamClient {
 
 	@Override
 	/**
-	 * Do nothing never purchases
+	 * Infinite never gets to purchases
 	 */
-	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts) {
-		// TODO Auto-generated method stub
-		return new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+	public Map<UUID, PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects, 
+			ResourcePile resourcesAvailable, 
+			PurchaseCosts purchaseCosts) {
+		return new HashMap<UUID,PurchaseTypes>();
+
 	}
 
 	@Override
 	public Map<UUID, SpaceSettlersPowerupEnum> getPowerups(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
+			Set<AbstractActionableObject> actionableObjects) {
 		// TODO Auto-generated method stub
 		return null;
 	}

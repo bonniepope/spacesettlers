@@ -1,7 +1,7 @@
-package spacesettlers.powerups;
+package spacesettlers.objects.powerups;
 
 import spacesettlers.objects.Base;
-import spacesettlers.objects.SpaceSettlersActionableObject;
+import spacesettlers.objects.AbstractActionableObject;
 
 /**
  * Doubles a base's healing energy increment on each time step.
@@ -17,7 +17,7 @@ public final class PowerupDoubleHealingBaseEnergy implements SpaceSettlersPoweru
 	 * Double the healing increment
 	 */
 	@Override
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject) {
+	public void applyPowerup(AbstractActionableObject actionableObject) {
 		Base base = (Base) actionableObject;
 		base.setHealingIncrement(base.getHealingIncrement() * 2);
 		base.removePowerup(getType());

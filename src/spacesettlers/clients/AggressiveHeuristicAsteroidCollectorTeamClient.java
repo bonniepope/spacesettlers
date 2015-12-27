@@ -2,6 +2,7 @@ package spacesettlers.clients;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -9,16 +10,19 @@ import java.util.UUID;
 
 import spacesettlers.actions.DoNothingAction;
 import spacesettlers.actions.MoveToObjectAction;
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.PurchaseCosts;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
 import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Beacon;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
 
@@ -39,12 +43,12 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 	/**
 	 * Assigns ships to asteroids and beacons, as described above
 	 */
-	public Map<UUID, SpaceSettlersAction> getMovementStart(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
-		HashMap<UUID, SpaceSettlersAction> actions = new HashMap<UUID, SpaceSettlersAction>();
+	public Map<UUID, AbstractAction> getMovementStart(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects) {
+		HashMap<UUID, AbstractAction> actions = new HashMap<UUID, AbstractAction>();
 
 		// loop through each ship
-		for (SpaceSettlersObject actionable :  actionableObjects) {
+		for (AbstractObject actionable :  actionableObjects) {
 			if (actionable instanceof Ship) {
 				Ship ship = (Ship) actionable;
 
@@ -53,7 +57,7 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 					asteroidCollectorID = ship.getId();
 				}
 				
-				SpaceSettlersAction action;
+				AbstractAction action;
 				if (ship.getId().equals(asteroidCollectorID)) {
 					// get the asteroids
 					action = getAsteroidCollectorAction(space, ship);
@@ -78,15 +82,15 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 	 * @param ship
 	 * @return
 	 */
-	private SpaceSettlersAction getAsteroidCollectorAction(Toroidal2DPhysics space,
+	private AbstractAction getAsteroidCollectorAction(Toroidal2DPhysics space,
 			Ship ship) {
-		SpaceSettlersAction current = ship.getCurrentAction();
+		AbstractAction current = ship.getCurrentAction();
 		Position currentPosition = ship.getPosition();
 
 		// aim for a beacon if there isn't enough energy
 		if (ship.getEnergy() < 2000) {
 			Beacon beacon = pickNearestBeacon(space, ship);
-			SpaceSettlersAction newAction = null;
+			AbstractAction newAction = null;
 			// if there is no beacon, then just skip a turn
 			if (beacon == null) {
 				newAction = new DoNothingAction();
@@ -98,15 +102,15 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 		}
 
 		// if the ship has enough resourcesAvailable, take it back to base
-		if (ship.getMoney() > 500) {
+		if (ship.getResources().getTotal() > 500) {
 			Base base = findNearestBase(space, ship);
-			SpaceSettlersAction newAction = new MoveToObjectAction(space, currentPosition, base);
+			AbstractAction newAction = new MoveToObjectAction(space, currentPosition, base);
 			aimingForBase.put(ship.getId(), true);
 			return newAction;
 		}
 
 		// did we bounce off the base?
-		if (ship.getMoney() == 0 && ship.getEnergy() > 2000 && aimingForBase.containsKey(ship.getId()) && aimingForBase.get(ship.getId())) {
+		if (ship.getResources().getTotal() == 0 && ship.getEnergy() > 2000 && aimingForBase.containsKey(ship.getId()) && aimingForBase.get(ship.getId())) {
 			current = null;
 			aimingForBase.put(ship.getId(), false);
 		}
@@ -116,7 +120,7 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 			aimingForBase.put(ship.getId(), false);
 			Asteroid asteroid = pickHighestValueFreeAsteroid(space, ship);
 
-			SpaceSettlersAction newAction = null;
+			AbstractAction newAction = null;
 
 			if (asteroid == null) {
 				// there is no asteroid available so collect a beacon
@@ -143,15 +147,15 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 	 * @param ship
 	 * @return
 	 */
-	private SpaceSettlersAction getWeaponShipAction(Toroidal2DPhysics space,
+	private AbstractAction getWeaponShipAction(Toroidal2DPhysics space,
 			Ship ship) {
-		SpaceSettlersAction current = ship.getCurrentAction();
+		AbstractAction current = ship.getCurrentAction();
 		Position currentPosition = ship.getPosition();
 
 		// aim for a beacon if there isn't enough energy
 		if (ship.getEnergy() < 2000) {
 			Beacon beacon = pickNearestBeacon(space, ship);
-			SpaceSettlersAction newAction = null;
+			AbstractAction newAction = null;
 			// if there is no beacon, then just skip a turn
 			if (beacon == null) {
 				newAction = new DoNothingAction();
@@ -163,15 +167,15 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 		}
 
 		// if the ship has enough resourcesAvailable, take it back to base
-		if (ship.getMoney() > 500) {
+		if (ship.getResources().getTotal() > 500) {
 			Base base = findNearestBase(space, ship);
-			SpaceSettlersAction newAction = new MoveToObjectAction(space, currentPosition, base);
+			AbstractAction newAction = new MoveToObjectAction(space, currentPosition, base);
 			aimingForBase.put(ship.getId(), true);
 			return newAction;
 		}
 
 		// did we bounce off the base?
-		if (ship.getMoney() == 0 && ship.getEnergy() > 2000 && aimingForBase.containsKey(ship.getId()) && aimingForBase.get(ship.getId())) {
+		if (ship.getResources().getTotal() == 0 && ship.getEnergy() > 2000 && aimingForBase.containsKey(ship.getId()) && aimingForBase.get(ship.getId())) {
 			current = null;
 			aimingForBase.put(ship.getId(), false);
 		}
@@ -181,7 +185,7 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 			aimingForBase.put(ship.getId(), false);
 			Ship enemy = pickNearestEnemyShip(space, ship);
 
-			SpaceSettlersAction newAction = null;
+			AbstractAction newAction = null;
 
 			if (enemy == null) {
 				// there is no enemy available so collect a beacon
@@ -262,8 +266,8 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 
 		for (Asteroid asteroid : asteroids) {
 			if (!asteroidToShipMap.containsKey(asteroid)) {
-				if (asteroid.isMineable() && asteroid.getResourcesAvailable() > bestMoney) {
-					bestMoney = asteroid.getResourcesAvailable();
+				if (asteroid.isMineable() && asteroid.getResource().getResourceQuantity() > bestMoney) {
+					bestMoney = asteroid.getResource().getResourceQuantity();
 					bestAsteroid = asteroid;
 				}
 			}
@@ -299,7 +303,7 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 
 
 	@Override
-	public void getMovementEnd(Toroidal2DPhysics space, Set<SpaceSettlersActionableObject> actionableObjects) {
+	public void getMovementEnd(Toroidal2DPhysics space, Set<AbstractActionableObject> actionableObjects) {
 		ArrayList<Asteroid> finishedAsteroids = new ArrayList<Asteroid>();
 
 		for (UUID asteroidId : asteroidToShipMap.keySet()) {
@@ -341,15 +345,17 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 	 * If there is enough resourcesAvailable, buy a base.  Place it by finding a ship that is sufficiently
 	 * far away from the existing bases
 	 */
-	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts) {
+	public Map<UUID, PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects, 
+			ResourcePile resourcesAvailable, 
+			PurchaseCosts purchaseCosts) {
 
-		HashMap<UUID, SpaceSettlersPurchaseEnum> purchases = new HashMap<UUID, SpaceSettlersPurchaseEnum>();
+		HashMap<UUID, PurchaseTypes> purchases = new HashMap<UUID, PurchaseTypes>();
 		double BASE_BUYING_DISTANCE = 200;
 		boolean bought_base = false;
 
-		if (availableMoney >= purchaseCosts.get(SpaceSettlersPurchaseEnum.BASE)) {
-			for (SpaceSettlersActionableObject actionableObject : actionableObjects) {
+		if (purchaseCosts.canAfford(PurchaseTypes.BASE, resourcesAvailable)) {
+			for (AbstractActionableObject actionableObject : actionableObjects) {
 				if (actionableObject instanceof Ship) {
 					Ship ship = (Ship) actionableObject;
 					Set<Base> bases = space.getBases();
@@ -366,7 +372,7 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 					}
 
 					if (maxDistance > BASE_BUYING_DISTANCE) {
-						purchases.put(ship.getId(), SpaceSettlersPurchaseEnum.BASE);
+						purchases.put(ship.getId(), PurchaseTypes.BASE);
 						bought_base = true;
 						//System.out.println("Buying a base!!");
 						break;
@@ -376,13 +382,13 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 		} 
 		
 		// see if you can buy EMPs
-		if (availableMoney >= purchaseCosts.get(SpaceSettlersPurchaseEnum.POWERUP_EMP_LAUNCHER)) {
-			for (SpaceSettlersActionableObject actionableObject : actionableObjects) {
+		if (purchaseCosts.canAfford(PurchaseTypes.POWERUP_EMP_LAUNCHER, resourcesAvailable)) {
+			for (AbstractActionableObject actionableObject : actionableObjects) {
 				if (actionableObject instanceof Ship) {
 					Ship ship = (Ship) actionableObject;
 					
-					if (!ship.getId().equals(asteroidCollectorID) && ship.isValidPowerup(SpaceSettlersPurchaseEnum.POWERUP_EMP_LAUNCHER.getPowerupMap())) {
-						purchases.put(ship.getId(), SpaceSettlersPurchaseEnum.POWERUP_EMP_LAUNCHER);
+					if (!ship.getId().equals(asteroidCollectorID) && ship.isValidPowerup(PurchaseTypes.POWERUP_EMP_LAUNCHER.getPowerupMap())) {
+						purchases.put(ship.getId(), PurchaseTypes.POWERUP_EMP_LAUNCHER);
 					}
 				}
 			}		
@@ -390,12 +396,12 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 		
 
 		// can I buy a ship?
-		if (availableMoney >= purchaseCosts.get(SpaceSettlersPurchaseEnum.SHIP) && bought_base == false) {
-			for (SpaceSettlersActionableObject actionableObject : actionableObjects) {
+		if (purchaseCosts.canAfford(PurchaseTypes.SHIP, resourcesAvailable) && bought_base == false) {
+			for (AbstractActionableObject actionableObject : actionableObjects) {
 				if (actionableObject instanceof Base) {
 					Base base = (Base) actionableObject;
 					
-					purchases.put(base.getId(), SpaceSettlersPurchaseEnum.SHIP);
+					purchases.put(base.getId(), PurchaseTypes.SHIP);
 					break;
 				}
 
@@ -415,11 +421,11 @@ public class AggressiveHeuristicAsteroidCollectorTeamClient extends TeamClient {
 	 */
 	@Override
 	public Map<UUID, SpaceSettlersPowerupEnum> getPowerups(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
+			Set<AbstractActionableObject> actionableObjects) {
 		HashMap<UUID, SpaceSettlersPowerupEnum> powerUps = new HashMap<UUID, SpaceSettlersPowerupEnum>();
 
 		Random random = new Random();
-		for (SpaceSettlersActionableObject actionableObject : actionableObjects){
+		for (AbstractActionableObject actionableObject : actionableObjects){
 			SpaceSettlersPowerupEnum powerup = SpaceSettlersPowerupEnum.values()[random.nextInt(SpaceSettlersPowerupEnum.values().length)];
 			if (!actionableObject.getId().equals(asteroidCollectorID) && actionableObject.isValidPowerup(powerup) && random.nextDouble() < weaponsProbability){
 				powerUps.put(actionableObject.getId(), powerup);

@@ -2,6 +2,7 @@ package spacesettlers.clients;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -9,17 +10,21 @@ import java.util.UUID;
 
 import spacesettlers.actions.DoNothingAction;
 import spacesettlers.actions.MoveAction;
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.PurchaseCosts;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.CircleGraphics;
 import spacesettlers.graphics.SpacewarGraphics;
-import spacesettlers.objects.Missile;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.objects.SpaceSettlersWeapon;
-import spacesettlers.powerups.SpaceSettlersPowerup;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerup;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
+import spacesettlers.objects.resources.ResourceTypes;
+import spacesettlers.objects.weapons.Missile;
+import spacesettlers.objects.weapons.AbstractWeapon;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
 /**
@@ -51,14 +56,14 @@ public class RandomTeamClient extends TeamClient {
 
 
 	@Override
-	public Map<UUID, SpaceSettlersAction> getMovementStart(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
-		HashMap<UUID, SpaceSettlersAction> randomActions = new HashMap<UUID, SpaceSettlersAction>();
+	public Map<UUID, AbstractAction> getMovementStart(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects) {
+		HashMap<UUID, AbstractAction> randomActions = new HashMap<UUID, AbstractAction>();
 		
-		for (SpaceSettlersObject actionable :  actionableObjects) {
+		for (AbstractObject actionable :  actionableObjects) {
 			if (actionable instanceof Ship) {
 				Ship ship = (Ship) actionable;
-				SpaceSettlersAction current = ship.getCurrentAction();
+				AbstractAction current = ship.getCurrentAction();
 				
 				// if we finished, make a new spot in space to aim for
 				if (current == null || current.isMovementFinished(space)) {
@@ -92,7 +97,7 @@ public class RandomTeamClient extends TeamClient {
 
 
 	@Override
-	public void getMovementEnd(Toroidal2DPhysics space, Set<SpaceSettlersActionableObject> actionableObjects) {
+	public void getMovementEnd(Toroidal2DPhysics space, Set<AbstractActionableObject> actionableObjects) {
 	}
 
 	@Override
@@ -107,9 +112,11 @@ public class RandomTeamClient extends TeamClient {
 	/**
 	 * Random never purchases 
 	 */
-	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts) {
-		return new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+	public Map<UUID, PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects, 
+			ResourcePile resourcesAvailable, 
+			PurchaseCosts purchaseCosts) {
+		return new HashMap<UUID,PurchaseTypes>();
 
 	}
 
@@ -117,15 +124,15 @@ public class RandomTeamClient extends TeamClient {
 	 * This is the new way to shoot (and use any other power up once they exist)
 	 */
 	public Map<UUID, SpaceSettlersPowerupEnum> getPowerups(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
+			Set<AbstractActionableObject> actionableObjects) {
 		
 		HashMap<UUID, SpaceSettlersPowerupEnum> powerupMap = new HashMap<UUID, SpaceSettlersPowerupEnum>();
 		
-		for (SpaceSettlersObject actionable :  actionableObjects) {
+		for (AbstractObject actionable :  actionableObjects) {
 			if (actionable instanceof Ship) {
 				Ship ship = (Ship) actionable;
 				if (random.nextDouble() < SHOOT_PROBABILITY) {
-					SpaceSettlersWeapon newBullet = ship.getNewWeapon(SpaceSettlersPowerupEnum.FIRE_MISSILE);
+					AbstractWeapon newBullet = ship.getNewWeapon(SpaceSettlersPowerupEnum.FIRE_MISSILE);
 					if (newBullet != null) {
 						powerupMap.put(ship.getId(), SpaceSettlersPowerupEnum.FIRE_MISSILE);
 						//System.out.println("Firing!");

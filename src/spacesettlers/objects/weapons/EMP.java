@@ -1,8 +1,11 @@
-package spacesettlers.objects;
+package spacesettlers.objects.weapons;
 
 import spacesettlers.graphics.EMPGraphics;
-import spacesettlers.powerups.SpaceSettlersPowerup;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.Ship;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerup;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
 import spacesettlers.utilities.Position;
 
 /**
@@ -12,7 +15,7 @@ import spacesettlers.utilities.Position;
  * @author amy
  *
  */
-public final class EMP extends SpaceSettlersWeapon implements SpaceSettlersPowerup {
+public final class EMP extends AbstractWeapon implements SpaceSettlersPowerup {
 	public static final int EMP_DAMAGE = 0;
 	public static final int EMP_COST = -100;
 	public static final int EMP_RADIUS = 5;
@@ -41,7 +44,7 @@ public final class EMP extends SpaceSettlersWeapon implements SpaceSettlersPower
 	 * Make a deep copy
 	 */
 	@Override
-	public SpaceSettlersObject deepClone() {
+	public AbstractObject deepClone() {
 		EMP newEMP = new EMP(position.deepCopy(), firingShip.deepClone());
 		newEMP.setAlive(isAlive);
 		newEMP.id = id;
@@ -63,7 +66,7 @@ public final class EMP extends SpaceSettlersWeapon implements SpaceSettlersPower
 	 * Then give it the cost of use
 	 */
 	@Override
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject) {
+	public void applyPowerup(AbstractActionableObject actionableObject) {
 		// can't fire with shields up so automatically drop them
 		actionableObject.setShielded(false);
 		

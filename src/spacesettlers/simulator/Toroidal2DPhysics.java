@@ -9,21 +9,21 @@ import java.util.Set;
 import java.util.UUID;
 
 import spacesettlers.actions.DoNothingAction;
-import spacesettlers.actions.SpaceSettlersAction;
+import spacesettlers.actions.AbstractAction;
 import spacesettlers.clients.ImmutableTeamInfo;
 import spacesettlers.configs.SpaceSettlersConfig;
 import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Beacon;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.objects.SpaceSettlersWeapon;
-import spacesettlers.powerups.PowerupDoubleHealingBaseEnergy;
-import spacesettlers.powerups.PowerupDoubleMaxEnergy;
-import spacesettlers.powerups.PowerupDoubleWeapon;
-import spacesettlers.powerups.PowerupToggleShield;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.PowerupDoubleHealingBaseEnergy;
+import spacesettlers.objects.powerups.PowerupDoubleMaxEnergy;
+import spacesettlers.objects.powerups.PowerupDoubleWeapon;
+import spacesettlers.objects.powerups.PowerupToggleShield;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.weapons.AbstractWeapon;
 import spacesettlers.utilities.Movement;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
@@ -45,7 +45,7 @@ public class Toroidal2DPhysics {
 	/**
 	 * All objects in the space
 	 */
-	Set<SpaceSettlersObject> allObjects;
+	Set<AbstractObject> allObjects;
 
 	/**
 	 * The list of beacons
@@ -70,12 +70,12 @@ public class Toroidal2DPhysics {
 	/**
 	 * List of all weapons currently in play
 	 */
-	Set<SpaceSettlersWeapon> weapons;
+	Set<AbstractWeapon> weapons;
 	
 	/**
 	 * A hashmap of objects by their ID
 	 */
-	HashMap <UUID, SpaceSettlersObject> objectsById;
+	HashMap <UUID, AbstractObject> objectsById;
 	
 	/**
 	 * The timestep used for simulation of physics
@@ -118,15 +118,15 @@ public class Toroidal2DPhysics {
 		width = simConfig.getWidth();
 		halfHeight = height / 2.0f;
 		halfWidth = width / 2.0f;
-		allObjects = new HashSet<SpaceSettlersObject>();
+		allObjects = new HashSet<AbstractObject>();
 		timeStep = simConfig.getSimulationTimeStep();
 		collisionHandler = new CollisionHandler();
 		beacons = new HashSet<Beacon>();
 		asteroids = new HashSet<Asteroid>();
 		bases = new HashSet<Base>();
 		ships = new HashSet<Ship>();
-		weapons = new HashSet<SpaceSettlersWeapon>();
-		objectsById = new HashMap<UUID, SpaceSettlersObject>();
+		weapons = new HashSet<AbstractWeapon>();
+		objectsById = new HashMap<UUID, AbstractObject>();
 		maxTime = simConfig.getSimulationSteps();
 		teamInfo = new HashSet<ImmutableTeamInfo>();
 	}
@@ -144,14 +144,14 @@ public class Toroidal2DPhysics {
 		this.timeStep = timeStep;
 		halfHeight = height / 2.0f;
 		halfWidth = width / 2.0f;
-		allObjects = new HashSet<SpaceSettlersObject>();
+		allObjects = new HashSet<AbstractObject>();
 		collisionHandler = new CollisionHandler();
 		beacons = new HashSet<Beacon>();
 		asteroids = new HashSet<Asteroid>();
 		bases = new HashSet<Base>();
 		ships = new HashSet<Ship>();
-		weapons = new HashSet<SpaceSettlersWeapon>();
-		objectsById = new HashMap<UUID, SpaceSettlersObject>();
+		weapons = new HashSet<AbstractWeapon>();
+		objectsById = new HashMap<UUID, AbstractObject>();
 		teamInfo = new HashSet<ImmutableTeamInfo>();
 	}
 
@@ -170,14 +170,14 @@ public class Toroidal2DPhysics {
 		this.currentTimeStep = other.currentTimeStep;
 		halfHeight = height / 2.0f;
 		halfWidth = width / 2.0f;
-		allObjects = new HashSet<SpaceSettlersObject>();
+		allObjects = new HashSet<AbstractObject>();
 		collisionHandler = new CollisionHandler();
 		beacons = new HashSet<Beacon>();
 		asteroids = new HashSet<Asteroid>();
 		bases = new HashSet<Base>();
 		ships = new HashSet<Ship>();
-		weapons = new HashSet<SpaceSettlersWeapon>();
-		objectsById = new HashMap<UUID, SpaceSettlersObject>();
+		weapons = new HashSet<AbstractWeapon>();
+		objectsById = new HashMap<UUID, AbstractObject>();
 		maxTime = other.maxTime;
 		teamInfo = new HashSet<ImmutableTeamInfo>(other.teamInfo);
 	}
@@ -188,7 +188,7 @@ public class Toroidal2DPhysics {
 	 * Add an object to the physics simulation
 	 * @param obj
 	 */
-	public void addObject(SpaceSettlersObject obj) {
+	public void addObject(AbstractObject obj) {
 		allObjects.add(obj);
 
 		if (obj.getClass() == Beacon.class) {
@@ -207,8 +207,8 @@ public class Toroidal2DPhysics {
 			ships.add((Ship) obj);
 		}
 		
-		if (obj instanceof SpaceSettlersWeapon) {
-			weapons.add((SpaceSettlersWeapon)obj);
+		if (obj instanceof AbstractWeapon) {
+			weapons.add((AbstractWeapon)obj);
 		}
 		
 		objectsById.put(obj.getId(), obj);
@@ -219,7 +219,7 @@ public class Toroidal2DPhysics {
 	 * Delete an object from the physics simulation
 	 * @param obj
 	 */
-	public void removeObject(SpaceSettlersObject obj) {
+	public void removeObject(AbstractObject obj) {
 		allObjects.remove(obj);
 
 		if (obj.getClass() == Beacon.class) {
@@ -238,8 +238,8 @@ public class Toroidal2DPhysics {
 			ships.remove((Ship) obj);
 		}
 		
-		if (obj instanceof SpaceSettlersWeapon) {
-			weapons.remove((SpaceSettlersWeapon)obj);
+		if (obj instanceof AbstractWeapon) {
+			weapons.remove((AbstractWeapon)obj);
 		}
 		
 		objectsById.remove(obj.getId());
@@ -250,7 +250,7 @@ public class Toroidal2DPhysics {
 	 * @param id
 	 * @return
 	 */
-	public SpaceSettlersObject getObjectById(UUID id) {
+	public AbstractObject getObjectById(UUID id) {
 		return objectsById.get(id);
 	}
 
@@ -292,7 +292,7 @@ public class Toroidal2DPhysics {
 	 * Return a list of weapons currently in play
 	 * @return
 	 */
-	public Set<SpaceSettlersWeapon> getWeapons() {
+	public Set<AbstractWeapon> getWeapons() {
 		return weapons;
 	}
 
@@ -380,7 +380,7 @@ public class Toroidal2DPhysics {
 	 * @return true if the location is free and false otherwise
 	 */
 	public boolean isLocationFree(Position location, int radius) {
-		for (SpaceSettlersObject object : allObjects) {
+		for (AbstractObject object : allObjects) {
 			if (findShortestDistanceVector(object.getPosition(), location).getMagnitude() <= (radius + object.getRadius())) {
 				return false;
 			}
@@ -477,18 +477,18 @@ public class Toroidal2DPhysics {
 
 		// get the power ups and create any objects (weapons) as necessary
 		for (UUID key : powerups.keySet()) {
-			SpaceSettlersObject swobject = getObjectById(key);
+			AbstractObject swobject = getObjectById(key);
 			// if the object is not alive or it is not actionable, then ignore this
-			if (!swobject.isAlive() || (!(swobject instanceof SpaceSettlersActionableObject))) {
+			if (!swobject.isAlive() || (!(swobject instanceof AbstractActionableObject))) {
 				continue;
 			}
 
 			// otherwise, handle the power up
-			handlePowerup((SpaceSettlersActionableObject)swobject, powerups.get(key));
+			handlePowerup((AbstractActionableObject)swobject, powerups.get(key));
 		}
 
 		// now move all objects that are moveable (which may include weapons)
-		for (SpaceSettlersObject object : allObjects) {
+		for (AbstractObject object : allObjects) {
 			// skip non-moveable objects or dead object
 			if (!object.isMoveable() || !object.isAlive()) {
 				continue;
@@ -500,7 +500,7 @@ public class Toroidal2DPhysics {
 			if (object.isControllable()) {
 
 				Ship ship = (Ship) object;
-				SpaceSettlersAction action = ship.getCurrentAction();
+				AbstractAction action = ship.getCurrentAction();
 				
 				// handle a null action
 				if (action == null) {
@@ -530,8 +530,8 @@ public class Toroidal2DPhysics {
 			}
 
 			// if any ships or bases are frozen, decrement their frozen count
-			if (object instanceof SpaceSettlersActionableObject && !object.isControllable()) {
-				SpaceSettlersActionableObject actionable = (SpaceSettlersActionableObject) object;
+			if (object instanceof AbstractActionableObject && !object.isControllable()) {
+				AbstractActionableObject actionable = (AbstractActionableObject) object;
 				actionable.decrementFreezeCount();
 			}
 
@@ -563,12 +563,12 @@ public class Toroidal2DPhysics {
 	 * @param swobject
 	 * @param spacewarPowerup
 	 */
-	private void handlePowerup(SpaceSettlersActionableObject swobject,
+	private void handlePowerup(AbstractActionableObject swobject,
 			SpaceSettlersPowerupEnum spacewarPowerup) {
 		switch(spacewarPowerup) {
 		case FIRE_MISSILE:
 			Ship ship = (Ship) swobject;
-			SpaceSettlersWeapon weapon = ship.getNewWeapon(SpaceSettlersPowerupEnum.FIRE_MISSILE);
+			AbstractWeapon weapon = ship.getNewWeapon(SpaceSettlersPowerupEnum.FIRE_MISSILE);
 			if (weapon != null && weapon.isValidWeapon(ship)) { 
 				addObject(weapon);
 				weapon.setFiringShip(ship);
@@ -658,17 +658,17 @@ public class Toroidal2DPhysics {
 		// would prefer to iterate over the set (as this is inefficient) but
 		// the set iterator collides a with b and then b with a, allowing them to 
 		// pass through one another!
-		SpaceSettlersObject[] allObjectsArray = (SpaceSettlersObject[]) allObjects.toArray(new SpaceSettlersObject[allObjects.size()]);
+		AbstractObject[] allObjectsArray = (AbstractObject[]) allObjects.toArray(new AbstractObject[allObjects.size()]);
 
 		// loop through all pairs of objects and see if they are colliding
 		for (int i = 0; i < allObjectsArray.length; i++) {
-			SpaceSettlersObject object1 = allObjectsArray[i];
+			AbstractObject object1 = allObjectsArray[i];
 			if (!object1.isAlive()) {
 				continue;
 			}
 			
 			for (int j = i + 1; j < allObjectsArray.length; j++) {
-				SpaceSettlersObject object2 = allObjectsArray[j];
+				AbstractObject object2 = allObjectsArray[j];
 
 				if (!object2.isAlive()) {
 					continue;
@@ -771,7 +771,7 @@ public class Toroidal2DPhysics {
 	 * have a delay before they can respawn.
 	 */
 	public void respawnDeadObjects(Random random, double asteroidMaxVelocity) {
-		for (SpaceSettlersObject object : allObjects) {
+		for (AbstractObject object : allObjects) {
 			if (!object.isAlive() && object.canRespawn()) {
 				Position newPostion = getRandomFreeLocation(random, object.getRadius() * 2);
 				object.setPosition(newPostion);
@@ -802,8 +802,8 @@ public class Toroidal2DPhysics {
 	public Toroidal2DPhysics deepClone() {
 		Toroidal2DPhysics newSpace = new Toroidal2DPhysics(this);
 
-		for (SpaceSettlersObject swObject : allObjects) {
-			SpaceSettlersObject newObject = swObject.deepClone();
+		for (AbstractObject swObject : allObjects) {
+			AbstractObject newObject = swObject.deepClone();
 			
 			newSpace.addObject(newObject);
 		}
@@ -815,14 +815,14 @@ public class Toroidal2DPhysics {
 	 * Loop through all weapons and remove any dead ones
 	 */
 	public void cleanupDeadWeapons() {
-		ArrayList<SpaceSettlersObject> deadObjects = new ArrayList<SpaceSettlersObject>();
-		for (SpaceSettlersObject object : allObjects) {
-			if (object instanceof SpaceSettlersWeapon && !object.isAlive()) {
+		ArrayList<AbstractObject> deadObjects = new ArrayList<AbstractObject>();
+		for (AbstractObject object : allObjects) {
+			if (object instanceof AbstractWeapon && !object.isAlive()) {
 				deadObjects.add(object);
 			}
 		}
 		
-		for (SpaceSettlersObject deadObject : deadObjects) {
+		for (AbstractObject deadObject : deadObjects) {
 			removeObject(deadObject);
 		}
 		
@@ -841,7 +841,7 @@ public class Toroidal2DPhysics {
 	 * Return all objects
 	 * @return
 	 */
-	public Set<SpaceSettlersObject> getAllObjects() {
+	public Set<AbstractObject> getAllObjects() {
 		return allObjects;
 	}
 
@@ -852,11 +852,11 @@ public class Toroidal2DPhysics {
 	 * 
 	 * @param  startPosition the starting location of the straight line path
 	 * @param  goalPosition the ending location of the straight line path
-	 * @param  obstructions an Set of SpaceSettlersObject obstructions (i.e., if you don't wish to consider mineable asteroids or beacons obstructions)
+	 * @param  obstructions an Set of AbstractObject obstructions (i.e., if you don't wish to consider mineable asteroids or beacons obstructions)
 	 * @param  freeRadius used to determine free space buffer size 
 	 * @return Whether or not a straight line path between two positions contains obstructions from a given set
 	 */
-	public boolean isPathClearOfObstructions(Position startPosition, Position goalPosition, Set<SpaceSettlersObject> obstructions, int freeRadius) {
+	public boolean isPathClearOfObstructions(Position startPosition, Position goalPosition, Set<AbstractObject> obstructions, int freeRadius) {
 		Vector2D pathToGoal = findShortestDistanceVector(startPosition,  goalPosition); 	// Shortest straight line path from startPosition to goalPosition
 		double distanceToGoal = pathToGoal.getMagnitude();										// Distance of straight line path
 
@@ -868,7 +868,7 @@ public class Toroidal2DPhysics {
 		double angleBetween; 		// Angle between vector from start position to obstruction
 		
 		// Loop through obstructions
-		for (SpaceSettlersObject obstruction: obstructions) {
+		for (AbstractObject obstruction: obstructions) {
 			// If the distance to the obstruction is greater than the distance to the end goal, ignore the obstruction
 			pathToObstruction = findShortestDistanceVector(startPosition, obstruction.getPosition());
 		    if (pathToObstruction.getMagnitude() > distanceToGoal) {

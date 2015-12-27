@@ -1,6 +1,12 @@
 package spacesettlers.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -31,7 +37,7 @@ public class SpaceSettlersGUI {
 	
 	JSpaceSettlersComponent mainComponent;
 	
-	JSpaceSettlersInfoComponent infoComponent;
+	JSpaceSettlersInfoPanel infoComponent;
 	
 	JPanel infoPanel, mainPanel;
 	
@@ -52,23 +58,27 @@ public class SpaceSettlersGUI {
 		infoPanel = new JPanel();
 		mainPanel = new JPanel();
 		
-		infoComponent = new JSpaceSettlersInfoComponent(config.getWidth());
+		infoComponent = new JSpaceSettlersInfoPanel(spacewarSimulator);
 		mainComponent = new JSpaceSettlersComponent(config.getHeight(), config.getWidth());
 
 		infoPanel.add(infoComponent);
 		infoPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.LINE_AXIS));
 
 		mainPanel.add(mainComponent);
 		MyEmptyBorder myEmptyBorder = new MyEmptyBorder();
-		mainPanel.setBorder(myEmptyBorder);
+		mainPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 		
-		Container contentPanel = mainFrame.getContentPane();
-		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.PAGE_AXIS));
-		contentPanel.add(infoPanel);
-		contentPanel.add(mainPanel);
-		//contentPanel.setPreferredSize(new Dimension(config.getWidth(), config.getHeight() + infoComponent.getHeight()));
-		//contentPanel.setMinimumSize(new Dimension(config.getWidth(), config.getHeight() + infoComponent.getHeight()));
+		mainFrame.setLayout(new GridBagLayout());
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.weightx = 1.0;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.fill = GridBagConstraints.BOTH;
+		mainFrame.add(mainPanel, constraints);
+		
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+		mainFrame.add(infoPanel, constraints);
 		
 		// create a help menu
 		JMenuBar menuBar = new JMenuBar();
@@ -169,6 +179,7 @@ public class SpaceSettlersGUI {
 	 */
 	public void redraw() {
 		infoComponent.setSimulator(spacewarSimulator);
+		infoComponent.updateData();
 		//mainFrame.paintComponents(getGraphics());
 		mainComponent.setSimulator(spacewarSimulator);
 		mainFrame.repaint();

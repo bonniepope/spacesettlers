@@ -1,6 +1,6 @@
 package spacesettlers.actions;
 
-import spacesettlers.objects.SpaceSettlersObject;
+import spacesettlers.objects.AbstractObject;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
 
@@ -11,7 +11,7 @@ import spacesettlers.utilities.Position;
  * @author amy
  */
 public class MoveToObjectAction extends MoveAction {
-	SpaceSettlersObject goalObject;
+	AbstractObject goalObject;
 	Position originalLocation;
 	
 	/**
@@ -21,7 +21,7 @@ public class MoveToObjectAction extends MoveAction {
 	 * @param currentLocation
 	 * @param goalObject
 	 */
-	public MoveToObjectAction(Toroidal2DPhysics space, Position currentLocation, SpaceSettlersObject goalObject) {
+	public MoveToObjectAction(Toroidal2DPhysics space, Position currentLocation, AbstractObject goalObject) {
 		super(space, currentLocation, goalObject.getPosition());
 		this.goalObject = goalObject;
 		this.originalLocation = goalObject.getPosition().deepCopy();
@@ -31,7 +31,7 @@ public class MoveToObjectAction extends MoveAction {
 	 * Return the goal object (and remember it is a clone so use its UUID!)
 	 * @return
 	 */
-	public SpaceSettlersObject getGoalObject() {
+	public AbstractObject getGoalObject() {
 		return goalObject;
 	}
 
@@ -47,7 +47,7 @@ public class MoveToObjectAction extends MoveAction {
 			return true;
 		}
 		
-		SpaceSettlersObject newGoalObj = space.getObjectById(goalObject.getId());
+		AbstractObject newGoalObj = space.getObjectById(goalObject.getId());
 		
 		if (newGoalObj == null) {
 			return true;

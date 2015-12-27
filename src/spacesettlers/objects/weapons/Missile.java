@@ -1,7 +1,9 @@
-package spacesettlers.objects;
+package spacesettlers.objects.weapons;
 
 import spacesettlers.graphics.MissileGraphics;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.Ship;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
 
@@ -10,7 +12,7 @@ import spacesettlers.utilities.Vector2D;
  * @author amy
  *
  */
-public final class Missile extends SpaceSettlersWeapon {
+public final class Missile extends AbstractWeapon {
 	public static final int MISSILE_DAMAGE = -200;
 	public static final int MISSILE_COST = -50;
 	public static final int MISSILE_RADIUS = 3;
@@ -61,7 +63,7 @@ public final class Missile extends SpaceSettlersWeapon {
 	 * the means unshielding the ship if it is shielded and updating the energy of the ship.
 	 */
 	@Override
-	public void applyPowerup(SpaceSettlersActionableObject actionableObject) {
+	public void applyPowerup(AbstractActionableObject actionableObject) {
 		// can't fire with shields up so automatically drop them
 		actionableObject.setShielded(false);
 		

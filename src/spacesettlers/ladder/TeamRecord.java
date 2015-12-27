@@ -18,9 +18,9 @@ public class TeamRecord {
 	
 	double averageBeacons;
 	
-	int totalMoney;
+	int totalResources;
 	
-	double averageMoney;
+	double averageResources;
 	
 	String teamName;
 	
@@ -44,8 +44,8 @@ public class TeamRecord {
 		averageScore = 0;
 		totalBeacons = 0;
 		averageBeacons = 0;
-		totalMoney = 0;
-		averageMoney = 0;
+		totalResources = 0;
+		averageResources = 0;
 	}
 
 	@Override
@@ -84,8 +84,8 @@ public class TeamRecord {
 		totalScore += team.getScore();
 		averageScore = totalScore / numGames;
 		
-		totalMoney += team.getTotalMoney();
-		averageMoney = totalMoney / numGames;
+		totalResources += team.getSummedTotalResources();
+		averageResources = totalResources / numGames;
 		
 		totalBeacons += team.getTotalBeacons();
 		averageBeacons = totalBeacons / numGames;
@@ -107,8 +107,8 @@ public class TeamRecord {
 		return averageBeacons;
 	}
 
-	public double getAverageMoney() {
-		return averageMoney;
+	public double getAverageResources() {
+		return averageResources;
 	}
 
 	

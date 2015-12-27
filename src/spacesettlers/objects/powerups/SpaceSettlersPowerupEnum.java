@@ -1,4 +1,4 @@
-package spacesettlers.powerups;
+package spacesettlers.objects.powerups;
 
 /**
  * A list of the available power ups to be used by SpaceSettlersActionableObjects

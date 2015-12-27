@@ -1,12 +1,18 @@
 package spacesettlers.objects;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import spacesettlers.clients.Team;
 import spacesettlers.graphics.BaseGraphics;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
+import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.utilities.Position;
 
 /**
@@ -14,7 +20,7 @@ import spacesettlers.utilities.Position;
  * @author amy
  *
  */
-public class Base extends SpaceSettlersActionableObject {
+public class Base extends AbstractActionableObject {
     public static final int BASE_RADIUS = 10;
     public static final int BASE_MASS = 1000;
     public static final int INITIAL_BASE_ENERGY = 5000;
@@ -26,9 +32,9 @@ public class Base extends SpaceSettlersActionableObject {
 	Color teamColor;
 	
 	/**
-	 * Money turned in by team members (can be used to buy things)
+	 * Resources turned in by team members (can be used to buy things)
 	 */
-	int money;
+	ResourcePile resources;
 	
 	/**
 	 * The team that owns this base
@@ -60,6 +66,7 @@ public class Base extends SpaceSettlersActionableObject {
 		this.isHomeBase = isHomeBase;
 		this.maxEnergy = INITIAL_BASE_ENERGY;
 		healingIncrement = INITIAL_ENERGY_HEALING_INCREMENT;
+		resources = new ResourcePile();
 	}
 
 	/**
@@ -75,6 +82,8 @@ public class Base extends SpaceSettlersActionableObject {
 		newBase.currentPowerups = new HashSet<SpaceSettlersPowerupEnum>(currentPowerups);
 		newBase.weaponCapacity = weaponCapacity;
 		newBase.healingIncrement = healingIncrement;
+		newBase.resources = new ResourcePile();
+		newBase.resources.add(resources);
 		return newBase;
 	}
 
@@ -99,8 +108,8 @@ public class Base extends SpaceSettlersActionableObject {
 	 * Get the team resourcesAvailable turned in so far (unspent)
 	 * @return
 	 */
-	public int getMoney() {
-		return money;
+	public ResourcePile getResources() {
+		return resources;
 	}
 	
 	/**
@@ -128,17 +137,16 @@ public class Base extends SpaceSettlersActionableObject {
 	}
 
 	/**
-	 * Change the resourcesAvailable amount by the specified amount
+	 * Change the resourcesAvailable amount by the specified amount.  Resources live
+	 * at a base but are available to the whole team once they arrive at a base.
 	 * @param difference
 	 */
-	public void incrementMoney(int difference) {
-		money += difference;
+	public void addResources(ResourcePile newResources) {
+		resources.add(newResources);
 		
-		if (difference > 0) {
-			team.incrementTotalMoney(difference);
-		}
-		
-		team.incrementAvailableMoney(difference);
+		// and increment the resources for the entire team
+		team.incrementTotalResources(newResources);
+		team.incrementAvailableResources(newResources);
 	}
 
 	/**

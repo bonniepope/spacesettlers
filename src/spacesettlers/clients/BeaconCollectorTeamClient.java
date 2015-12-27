@@ -2,6 +2,7 @@ package spacesettlers.clients;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -9,15 +10,18 @@ import java.util.UUID;
 import spacesettlers.actions.DoNothingAction;
 import spacesettlers.actions.MoveAction;
 import spacesettlers.actions.MoveToObjectAction;
-import spacesettlers.actions.SpaceSettlersAction;
+import spacesettlers.actions.PurchaseCosts;
+import spacesettlers.actions.AbstractAction;
 import spacesettlers.actions.SpaceSettlersActionException;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
 import spacesettlers.objects.Beacon;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
 
@@ -37,22 +41,22 @@ public class BeaconCollectorTeamClient extends TeamClient {
 	/**
 	 * Send each ship to a beacon
 	 */
-	public Map<UUID, SpaceSettlersAction> getMovementStart(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
-		HashMap<UUID, SpaceSettlersAction> actions = new HashMap<UUID, SpaceSettlersAction>();
+	public Map<UUID, AbstractAction> getMovementStart(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects) {
+		HashMap<UUID, AbstractAction> actions = new HashMap<UUID, AbstractAction>();
 
 		// loop through each ship
-		for (SpaceSettlersObject actionable :  actionableObjects) {
+		for (AbstractObject actionable :  actionableObjects) {
 			if (actionable instanceof Ship) {
 				Ship ship = (Ship) actionable;
-				SpaceSettlersAction current = ship.getCurrentAction();
+				AbstractAction current = ship.getCurrentAction();
 
 				// does the ship have a beacon it is aiming for?
 				if (current == null || current.isMovementFinished(space) || !shipToBeaconMap.containsKey(ship)) {
 					Position currentPosition = ship.getPosition();
 					Beacon beacon = pickNearestFreeBeacon(space, ship);
 
-					SpaceSettlersAction newAction = null;
+					AbstractAction newAction = null;
 
 					if (beacon == null) {
 						// there is no beacon available so do nothing
@@ -111,7 +115,7 @@ public class BeaconCollectorTeamClient extends TeamClient {
 	/**
 	 * Clean up data structure including beacon maps
 	 */
-	public void getMovementEnd(Toroidal2DPhysics space, Set<SpaceSettlersActionableObject> actionableObjects) {
+	public void getMovementEnd(Toroidal2DPhysics space, Set<AbstractActionableObject> actionableObjects) {
 
 		// once a beacon has been picked up, remove it from the list 
 		// of beacons being pursued (so it can be picked up at its
@@ -147,15 +151,17 @@ public class BeaconCollectorTeamClient extends TeamClient {
 	/**
 	 * Beacon collector never purchases
 	 */
-	public Map<UUID, SpaceSettlersPurchaseEnum> getTeamPurchases(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects, int availableMoney, Map<SpaceSettlersPurchaseEnum, Integer> purchaseCosts) {
-		return new HashMap<UUID,SpaceSettlersPurchaseEnum>();
+	public Map<UUID, PurchaseTypes> getTeamPurchases(Toroidal2DPhysics space,
+			Set<AbstractActionableObject> actionableObjects, 
+			ResourcePile resourcesAvailable, 
+			PurchaseCosts purchaseCosts) {
+		return new HashMap<UUID,PurchaseTypes>();
 	}
 
 
 	@Override
 	public Map<UUID, SpaceSettlersPowerupEnum> getPowerups(Toroidal2DPhysics space,
-			Set<SpaceSettlersActionableObject> actionableObjects) {
+			Set<AbstractActionableObject> actionableObjects) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -10,7 +10,8 @@ import org.junit.Test;
 
 import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.simulator.CollisionHandler;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
@@ -125,7 +126,7 @@ public class TestCollisionHandler {
 
 		Position asteroid2Pos = new Position(0, 10, -Math.PI/4);
 		asteroid2Pos.setTranslationalVelocity(new Vector2D(0, -10));
-		asteroid = new Asteroid(asteroid2Pos, false, 10, true);
+		asteroid = new Asteroid(asteroid2Pos, false, 10, true, ResourceTypes.WATER);
 		
 		collisionHandler.collide(ship1, asteroid, space);
 		
@@ -147,7 +148,7 @@ public class TestCollisionHandler {
 
 		Position asteroid2Pos = new Position(10, 0, -Math.PI/4);
 		asteroid2Pos.setTranslationalVelocity(new Vector2D(-10, 0));
-		asteroid = new Asteroid(asteroid2Pos, false, 10, true);
+		asteroid = new Asteroid(asteroid2Pos, false, 10, true, ResourceTypes.WATER);
 		
 		collisionHandler.collide(ship1, asteroid, space);
 		
@@ -165,11 +166,11 @@ public class TestCollisionHandler {
 		
 		Position position1 = new Position(0, 0, Math.PI / 4);
 		position1.setTranslationalVelocity(new Vector2D(20, 0));
-		asteroid1 = new Asteroid(position1, false, 10, true);
+		asteroid1 = new Asteroid(position1, false, 10, true, ResourceTypes.WATER);
 
 		Position position2 = new Position(10, 0, -Math.PI/4);
 		position2.setTranslationalVelocity(new Vector2D(-10, 0));
-		asteroid2 = new Asteroid(position2, false, 10, true);
+		asteroid2 = new Asteroid(position2, false, 10, true, ResourceTypes.WATER);
 		
 		collisionHandler.collide(asteroid1, asteroid2, space);
 		
@@ -186,10 +187,10 @@ public class TestCollisionHandler {
 		
 		Position position1 = new Position(0, 0, Math.PI / 4);
 		position1.setTranslationalVelocity(new Vector2D(20, 0));
-		asteroid1 = new Asteroid(position1, false, 10, true);
+		asteroid1 = new Asteroid(position1, false, 10, true, ResourceTypes.WATER);
 
 		Position position2 = new Position(10, 0, -Math.PI/4);
-		asteroid2 = new Asteroid(position2, false, 10, false);
+		asteroid2 = new Asteroid(position2, false, 10, false, ResourceTypes.WATER);
 		
 		collisionHandler.collide(asteroid1, asteroid2, space);
 		

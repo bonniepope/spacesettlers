@@ -79,9 +79,9 @@ public class BaseGraphics extends SpacewarGraphics {
 		graphics.drawString(number, (int) drawLocation.getX() + 12, (int) drawLocation.getY() + 12);
 		
 		// show the resourcesAvailable collected by the team at this base
-		number = Integer.toString(base.getMoney());
-		graphics.setPaint(JSpaceSettlersComponent.TEXT_COLOR);
-		graphics.drawString(number, (int) drawLocation.getX() + 12, (int) drawLocation.getY() - 12);
+		//number = Integer.toString(base.getMoney());
+		//graphics.setPaint(JSpaceSettlersComponent.TEXT_COLOR);
+		//graphics.drawString(number, (int) drawLocation.getX() + 12, (int) drawLocation.getY() - 12);
 		
 		// if it is a home base, put a H inside it
 		if (base.isHomeBase()) {

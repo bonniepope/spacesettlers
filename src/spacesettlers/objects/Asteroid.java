@@ -1,6 +1,11 @@
 package spacesettlers.objects;
 
 import spacesettlers.graphics.AsteroidGraphics;
+import spacesettlers.objects.resources.AbstractResource;
+import spacesettlers.objects.resources.FuelResource;
+import spacesettlers.objects.resources.MetalsResource;
+import spacesettlers.objects.resources.ResourceTypes;
+import spacesettlers.objects.resources.WaterResource;
 import spacesettlers.utilities.Position;
 
 /**
@@ -9,16 +14,15 @@ import spacesettlers.utilities.Position;
  * @author amy
  *
  */
-public class Asteroid extends SpaceSettlersObject {
+public class Asteroid extends AbstractObject {
 	public static final int MIN_ASTEROID_RADIUS = 5;
 	public static final int MAX_ASTEROID_RADIUS = 15;
 	public static final int ASTEROID_MASS = 1000;
-	public static final double RESOURCE_DENSITY = 0.5;
 	
 	/**
-	 * If an asteroid is mineable, this will be non-zero and proportional to its radius
+	 * If an asteroid is mineable, this will be non-null and proportional to its radius
 	 */
-	int resourcesAvailable;
+	AbstractResource resource;
 	
     /**
      * Is the asteroid mineable?
@@ -28,9 +32,9 @@ public class Asteroid extends SpaceSettlersObject {
     /**
      * What kind of resource does the asteroid provide (if it is mineable)?
      */
-    SpaceSettlersResourcesEnum asteroidType;
+    ResourceTypes type;
 	
-    public Asteroid(Position location, boolean mineable, int radius, boolean moveable, SpaceSettlersResourcesEnum type) {
+    public Asteroid(Position location, boolean mineable, int radius, boolean moveable, ResourceTypes type) {
 		super(ASTEROID_MASS, radius, location);
 		
 		setDrawable(true);
@@ -38,10 +42,12 @@ public class Asteroid extends SpaceSettlersObject {
 		isMineable = mineable;
 		graphic = new AsteroidGraphics(this);
 		this.isMoveable = moveable;
-		asteroidType = type;
+		this.type = type;
 		
 		if (isMineable) {
 			resetResources();
+		} else {
+			resource = null;
 		}
 		
 	}
@@ -50,7 +56,7 @@ public class Asteroid extends SpaceSettlersObject {
      * Make a copy for security
      */
     public Asteroid deepClone() {
-    	Asteroid newAsteroid = new Asteroid(getPosition().deepCopy(), isMineable, radius, isMoveable, asteroidType);
+    	Asteroid newAsteroid = new Asteroid(getPosition().deepCopy(), isMineable, radius, isMoveable, type);
     	newAsteroid.setAlive(isAlive);
     	newAsteroid.id = id;
     	return newAsteroid;
@@ -61,17 +67,28 @@ public class Asteroid extends SpaceSettlersObject {
      * Sets the resource value based on the radius
      */
     private void resetResources() {
-    	resourcesAvailable = (int) (radius * radius * Math.PI * RESOURCE_DENSITY);
+    	switch (type) {
+    		case WATER:
+    			resource = new WaterResource(radius);
+    			break;
+    		
+    		case FUEL:
+    			resource = new FuelResource(radius);
+    			break;
+    			
+    		case METALS:
+    			resource = new MetalsResource(radius);
+    			break;
+    	}
     }
     
     /**
-     * Return how much of the resource this asteroid is worth
+     * Return the resource for this asteroid
      * @return
      */
-    public int getResourcesAvailable() {
-    	return resourcesAvailable;
-    }
-    
+	public AbstractResource getResource() {
+		return resource;
+	}
 
 	/**
 	 * @return the isMineable
@@ -84,8 +101,8 @@ public class Asteroid extends SpaceSettlersObject {
 	 * Return the type of the asteroid
 	 * @return
 	 */
-	public SpaceSettlersResourcesEnum getAsteroidType() {
-		return asteroidType;
+	public ResourceTypes getType() {
+		return type;
 	}
 
 	

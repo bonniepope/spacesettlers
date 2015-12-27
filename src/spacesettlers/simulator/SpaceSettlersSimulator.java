@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import spacesettlers.actions.DoNothingAction;
-import spacesettlers.actions.SpaceSettlersAction;
-import spacesettlers.actions.SpaceSettlersPurchaseEnum;
+import spacesettlers.actions.AbstractAction;
+import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.clients.ImmutableTeamInfo;
 import spacesettlers.clients.Team;
 import spacesettlers.clients.TeamClient;
@@ -31,10 +31,10 @@ import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Beacon;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.SpaceSettlersActionableObject;
-import spacesettlers.objects.SpaceSettlersObject;
-import spacesettlers.objects.SpaceSettlersResourcesEnum;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.AbstractActionableObject;
+import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
 
@@ -134,11 +134,6 @@ public class SpaceSettlersSimulator {
 		// and use it to make agents and the world
 		initializeSimulation(parserConfig);
 
-		// create the GUI if the user asked for it
-		if (parserConfig.getBoolean("graphics")) {
-			gui = new SpaceSettlersGUI(simConfig, this);
-		}
-		
 		// see if debug mode is on
 		if (parserConfig.getBoolean("debug")) {
 			debug = true;
@@ -148,7 +143,10 @@ public class SpaceSettlersSimulator {
 		    TEAM_END_ACTION_TIMEOUT = Integer.MAX_VALUE;
 		    TEAM_GRAPHICS_TIMEOUT = Integer.MAX_VALUE;
 		}
-		
+
+		// create the GUI after everything is created in the simulator
+		System.out.println(this);
+		createGUI(parserConfig);
 	}
 
 	/**
@@ -187,9 +185,23 @@ public class SpaceSettlersSimulator {
 		    TEAM_END_ACTION_TIMEOUT = Integer.MAX_VALUE;
 		    TEAM_GRAPHICS_TIMEOUT = Integer.MAX_VALUE;
 		}
-
+		// create the GUI after everything is created in the simulator
+		System.out.println(this);
+		createGUI(parserConfig);
 	}
 
+	/**
+	 * Create the GUI after the simulator has been initialize
+	 * 
+	 * @param parserConfig
+	 */
+	public void createGUI(JSAPResult parserConfig) {
+		// create the GUI if the user asked for it
+		if (parserConfig.getBoolean("graphics")) {
+			gui = new SpaceSettlersGUI(simConfig, this);
+		}
+	}
+	
 
 	/**
 	 * Sleep so the gui can update (From Andy Fagg's tree code)
@@ -240,13 +252,13 @@ public class SpaceSettlersSimulator {
 
 			// choose the asteroid type
 			prob = random.nextDouble();
-			SpaceSettlersResourcesEnum type;
+			ResourceTypes type;
 			if (prob <= asteroidConfig.getProbabilityFuelType()) {
-				type = SpaceSettlersResourcesEnum.FUEL;
+				type = ResourceTypes.FUEL;
 			} else if (prob <= (asteroidConfig.getProbabilityFuelType() + asteroidConfig.getProbabilityMetalsType())) {
-				type = SpaceSettlersResourcesEnum.METALS;
+				type = ResourceTypes.METALS;
 			} else {
-				type = SpaceSettlersResourcesEnum.WATER;
+				type = ResourceTypes.WATER;
 			}
 
 			// create the asteroid
@@ -433,7 +445,7 @@ public class SpaceSettlersSimulator {
 	/**
 	 * @return all objects in the simulator
 	 */
-	public Set<SpaceSettlersObject> getAllObjects() {
+	public Set<AbstractObject> getAllObjects() {
 		return simulatedSpace.allObjects;
 	}
 
@@ -472,8 +484,8 @@ public class SpaceSettlersSimulator {
 		} else {
 			teamExecutor = Executors.newCachedThreadPool();
 		}
-		Map<Team, Future<Map<UUID,SpaceSettlersAction>>> clientActionFutures = 
-				new HashMap<Team, Future<Map<UUID,SpaceSettlersAction>>>();
+		Map<Team, Future<Map<UUID,AbstractAction>>> clientActionFutures = 
+				new HashMap<Team, Future<Map<UUID,AbstractAction>>>();
 
 		// get the actions from each team
 		for (Team team : teams) {
@@ -481,16 +493,16 @@ public class SpaceSettlersSimulator {
 		}
 
 		for (Team team : teams) {
-			Map<UUID, SpaceSettlersAction> teamActions;
+			Map<UUID, AbstractAction> teamActions;
 
 			try {
 				teamActions = clientActionFutures.get(team).get();
 			} catch (InterruptedException e) {
 				//something went wrong...return empty map
-				teamActions = new HashMap<UUID, SpaceSettlersAction>();
+				teamActions = new HashMap<UUID, AbstractAction>();
 			} catch (ExecutionException e) {
 				//something went wrong...return empty map
-				teamActions = new HashMap<UUID, SpaceSettlersAction>();
+				teamActions = new HashMap<UUID, AbstractAction>();
 			}
 
 
@@ -520,13 +532,13 @@ public class SpaceSettlersSimulator {
 					}
 
 					// get the object and ensure it can have a power up on it
-					SpaceSettlersObject swObject = simulatedSpace.getObjectById(key);
-					if (!(swObject instanceof SpaceSettlersActionableObject)) {
+					AbstractObject swObject = simulatedSpace.getObjectById(key);
+					if (!(swObject instanceof AbstractActionableObject)) {
 						continue;
 					}
 					
 					 // verify that the object has the power up associated with it
-					SpaceSettlersActionableObject actionableObject = (SpaceSettlersActionableObject) swObject;
+					AbstractActionableObject actionableObject = (AbstractActionableObject) swObject;
 					if (actionableObject.isValidPowerup(powerups.get(key))) {
 						allPowerups.put(key, powerups.get(key));
 					}
@@ -545,7 +557,7 @@ public class SpaceSettlersSimulator {
 		// handle purchases at the end of a turn (so ships will have movements next turn)
 		for (Team team : teams) {
 			// now get purchases for the team
-			Map<UUID, SpaceSettlersPurchaseEnum> purchases = team.getTeamPurchases(simulatedSpace);
+			Map<UUID, PurchaseTypes> purchases = team.getTeamPurchases(simulatedSpace);
 			handlePurchases(team, purchases);
 		}
 
@@ -581,27 +593,25 @@ public class SpaceSettlersSimulator {
 
 	/**
 	 * Handle purchases for a team
-	 * NOTE: Only BASE purchases work at the moment
-	 * TODO: implement the rest of purchasing
 	 * 
 	 * @param team
 	 * @param purchases
 	 */
-	private void handlePurchases(Team team,	Map<UUID, SpaceSettlersPurchaseEnum> purchases) {
+	private void handlePurchases(Team team,	Map<UUID, PurchaseTypes> purchases) {
 		// handle teams that don't purchase
 		if (purchases == null) {
 			return;
 		}
 		
 		for (UUID key : purchases.keySet()) {
-			SpaceSettlersPurchaseEnum purchase = purchases.get(key);
+			PurchaseTypes purchase = purchases.get(key);
 			// skip the purchase if there isn't enough resourcesAvailable
-			if (team.getAvailableMoney() < team.getCurrentCost(purchase)) {
+			if (!team.canAfford(purchase)) {
 				continue;
 			}
 			
 			// get the object where the item is to be purchased (on on whom it is to be purchased)
-			SpaceSettlersActionableObject purchasingObject = (SpaceSettlersActionableObject) simulatedSpace.getObjectById(key);
+			AbstractActionableObject purchasingObject = (AbstractActionableObject) simulatedSpace.getObjectById(key);
 
 			// can only make purchases for your team
 			if (!purchasingObject.getTeamName().equalsIgnoreCase(team.getTeamName())) {
@@ -624,7 +634,7 @@ public class SpaceSettlersSimulator {
 					simulatedSpace.addObject(base);
 					team.addBase(base);
 					// charge the team for the purchase
-					team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+					team.decrementAvailableResources(team.getCurrentCost(purchase));
 					team.updateCost(purchase);
 				}
 				break;
@@ -647,7 +657,7 @@ public class SpaceSettlersSimulator {
 					simulatedSpace.addObject(ship);
 					team.addShip(ship);
 					// charge the team for the purchase
-					team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+					team.decrementAvailableResources(team.getCurrentCost(purchase));
 					team.updateCost(purchase);
 				}
 				
@@ -656,7 +666,7 @@ public class SpaceSettlersSimulator {
 			case POWERUP_SHIELD:
 				purchasingObject.addPowerup(SpaceSettlersPowerupEnum.TOGGLE_SHIELD);
 				// charge the team for the purchase
-				team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+				team.decrementAvailableResources(team.getCurrentCost(purchase));
 				team.updateCost(purchase);
 				System.out.println("Buying a shield");
 				break;
@@ -666,19 +676,10 @@ public class SpaceSettlersSimulator {
 				if (purchasingObject instanceof Ship) {
 					purchasingObject.addPowerup(SpaceSettlersPowerupEnum.FIRE_EMP);
 					// charge the team for the purchase
-					team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+					team.decrementAvailableResources(team.getCurrentCost(purchase));
 					team.updateCost(purchase);
 					System.out.println("Buying a emp launcher");
 				}
-				break;
-				
-			case POWERUP_MINE_LAUNCHER:
-				break;
-				
-			case POWERUP_BASE_TURRET:
-				break;
-
-			case POWERUP_HEAT_SEEKING_MISSILE_LAUNCHER:
 				break;
 				
 			case POWERUP_DOUBLE_BASE_HEALING_SPEED:
@@ -686,7 +687,7 @@ public class SpaceSettlersSimulator {
 				if (purchasingObject instanceof Base) {
 					purchasingObject.addPowerup(SpaceSettlersPowerupEnum.DOUBLE_BASE_HEALING_SPEED);
 					// charge the team for the purchase
-					team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+					team.decrementAvailableResources(team.getCurrentCost(purchase));
 					team.updateCost(purchase);
 					System.out.println("Buying a healing doubler for a base");
 				}
@@ -695,7 +696,7 @@ public class SpaceSettlersSimulator {
 			case POWERUP_DOUBLE_MAX_ENERGY:
 				purchasingObject.addPowerup(SpaceSettlersPowerupEnum.DOUBLE_MAX_ENERGY);
 				// charge the team for the purchase
-				team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+				team.decrementAvailableResources(team.getCurrentCost(purchase));
 				team.updateCost(purchase);
 				System.out.println("Buying a energy doubler");
 				break;
@@ -703,7 +704,7 @@ public class SpaceSettlersSimulator {
 			case POWERUP_DOUBLE_WEAPON_CAPACITY:
 				purchasingObject.addPowerup(SpaceSettlersPowerupEnum.DOUBLE_WEAPON_CAPACITY);
 				// charge the team for the purchase
-				team.incrementAvailableMoney(-team.getCurrentCost(purchase));
+				team.decrementAvailableResources(team.getCurrentCost(purchase));
 				team.updateCost(purchase);
 				System.out.println("Buying a weapons doubler");
 				break;
@@ -726,9 +727,9 @@ public class SpaceSettlersSimulator {
 	 * Updates the scores for the teams
 	 */
 	private void updateScores() {
-		if (simConfig.getScoringMethod().equalsIgnoreCase("Money")) {
+		if (simConfig.getScoringMethod().equalsIgnoreCase("Resources")) {
 			for (Team team : teams) {
-				team.setScore(team.getTotalMoney());
+				team.setScore(team.getSummedTotalResources());
 			}
 		} else if (simConfig.getScoringMethod().equalsIgnoreCase("Beacons")) {
 			for (Team team : teams) {
@@ -809,19 +810,19 @@ public class SpaceSettlersSimulator {
 	 * @author amy
 	 *
 	 */
-	class AdvanceTimeCallable implements  Callable<Map<UUID,SpaceSettlersAction>>{
+	class AdvanceTimeCallable implements  Callable<Map<UUID,AbstractAction>>{
 		private Team team;
 
 		AdvanceTimeCallable(Team team){
 			this.team = team;
 		}
 
-		public Map<UUID,SpaceSettlersAction> call() throws Exception {
+		public Map<UUID,AbstractAction> call() throws Exception {
 			if(this.team != null){
 				return this.team.getTeamMovementStart(simulatedSpace);
 			}else{
 				//something went wrong...lets return empty map
-				return new HashMap<UUID, SpaceSettlersAction>();
+				return new HashMap<UUID, AbstractAction>();
 			}
 
 		}

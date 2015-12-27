@@ -3,8 +3,8 @@ package spacesettlers.objects;
 import java.util.HashSet;
 import java.util.Set;
 
-import spacesettlers.powerups.SpaceSettlersPowerup;
-import spacesettlers.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.powerups.SpaceSettlersPowerup;
+import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
 import spacesettlers.utilities.Position;
 
 /**
@@ -14,7 +14,7 @@ import spacesettlers.utilities.Position;
  * @author amy
  *
  */
-abstract public class SpaceSettlersActionableObject extends SpaceSettlersObject {
+abstract public class AbstractActionableObject extends AbstractObject {
 	/**
 	 * Maximum number of bullets (or other weapons) simultaneously in the simulator.  
 	 * This keeps ships from simply firing at every step 
@@ -63,7 +63,7 @@ abstract public class SpaceSettlersActionableObject extends SpaceSettlersObject 
 	 * @param radius
 	 * @param position
 	 */
-	public SpaceSettlersActionableObject(int mass, int radius, Position position) {
+	public AbstractActionableObject(int mass, int radius, Position position) {
 		super(mass, radius, position);
 		currentPowerups = new HashSet<SpaceSettlersPowerupEnum>();
 		weaponCapacity = INITIAL_WEAPON_CAPACITY;
@@ -75,7 +75,7 @@ abstract public class SpaceSettlersActionableObject extends SpaceSettlersObject 
 	 * @param mass
 	 * @param radius
 	 */
-	public SpaceSettlersActionableObject(int mass, int radius) {
+	public AbstractActionableObject(int mass, int radius) {
 		super(mass, radius);
 		currentPowerups = new HashSet<SpaceSettlersPowerupEnum>();
 	}
