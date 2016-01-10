@@ -169,7 +169,7 @@ public class JSpaceSettlersComponent extends JComponent {
 
     /**
      * Set the current sim
-     * @param spacewarSimulator
+     * @param simulator
      */
 	public void setSimulator(SpaceSettlersSimulator spacewarSimulator) {
 		this.simulator = spacewarSimulator;

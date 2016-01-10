@@ -298,7 +298,7 @@ public class Team {
 	/**
 	 * Ask the team client for actions
 	 * 
-	 * @param spacewarSimulator
+	 * @param simulator
 	 * @param random
 	 * @return
 	 */

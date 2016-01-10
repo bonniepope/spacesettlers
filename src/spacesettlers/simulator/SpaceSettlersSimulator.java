@@ -827,6 +827,14 @@ public class SpaceSettlersSimulator {
 
 		}
 	}
+	
+	/**
+	 * Returns the physics engine (should only be called outside of the clients because they don't have access to this for security)
+	 * @return
+	 */
+	public Toroidal2DPhysics getSimulatedSpace() {
+		return simulatedSpace;
+	}
 
 	/**
 	 * Is the simulator paused?

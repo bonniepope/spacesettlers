@@ -278,7 +278,10 @@ public class HumanTeamClient extends TeamClient {
 		public void mouseClicked(MouseEvent e) {
 			Point point = e.getPoint();
 			//System.out.println("User clicked at " + point.x + ", " + point.y);
-			lastMouseClick = new Position(point.x, point.y);
+			// only listen to the right button
+			if (e.getButton() == MouseEvent.BUTTON3) {
+				lastMouseClick = new Position(point.x, point.y);
+			}
 		}
 	}
 	

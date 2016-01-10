@@ -74,7 +74,7 @@ public class JSpaceSettlersInfoPanel extends JPanel {
 
 	/**
 	 * Save the current state of the sim for painting
-	 * @param spacewarSimulator
+	 * @param simulator
 	 */
 	public void setSimulator(SpaceSettlersSimulator spacewarSimulator) {
 		simulator = spacewarSimulator;

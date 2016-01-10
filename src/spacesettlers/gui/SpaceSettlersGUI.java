@@ -7,11 +7,14 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,7 +28,10 @@ import javax.swing.KeyStroke;
 
 import spacesettlers.clients.Team;
 import spacesettlers.configs.SpaceSettlersConfig;
+import spacesettlers.objects.AbstractObject;
 import spacesettlers.simulator.SpaceSettlersSimulator;
+import spacesettlers.simulator.Toroidal2DPhysics;
+import spacesettlers.utilities.Position;
 
 /**
  * Main GUI for the Space Settlers simulator
@@ -43,22 +49,22 @@ public class SpaceSettlersGUI {
 	
 	boolean isPaused = false;
 	
-	SpaceSettlersSimulator spacewarSimulator;
+	SpaceSettlersSimulator simulator;
 	
 	/**
 	 * Make a new GUI
 	 * @param config
 	 */
-	public SpaceSettlersGUI(SpaceSettlersConfig config, SpaceSettlersSimulator spacewarSimulator) {
+	public SpaceSettlersGUI(SpaceSettlersConfig config, SpaceSettlersSimulator simulator) {
 		super();
-		this.spacewarSimulator = spacewarSimulator;
+		this.simulator = simulator;
 		
 		mainFrame = new JFrame("Space Settlers");
 		
 		infoPanel = new JPanel();
 		mainPanel = new JPanel();
 		
-		infoComponent = new JSpaceSettlersInfoPanel(spacewarSimulator);
+		infoComponent = new JSpaceSettlersInfoPanel(simulator);
 		mainComponent = new JSpaceSettlersComponent(config.getHeight(), config.getWidth());
 
 		infoPanel.add(infoComponent);
@@ -111,7 +117,7 @@ public class SpaceSettlersGUI {
 		);
 		
 		// add any client key & mouse listeners that want to be added
-		for (Team team : spacewarSimulator.getTeams()) {
+		for (Team team : simulator.getTeams()) {
 			KeyAdapter listener = team.getKeyAdapter();
 			if (listener != null) {
 				mainFrame.addKeyListener(listener);
@@ -124,6 +130,10 @@ public class SpaceSettlersGUI {
 			}
 
 		}
+		
+		// add the mouse listener for the info boxes
+		mainPanel.addMouseListener(new GUIMouseListener());
+		
 
 		// finally draw it
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -135,11 +145,40 @@ public class SpaceSettlersGUI {
 	}
 
 	/**
+	 * Main GUI mouse interface.  Pops up a info area in the info panel if the user LEFT clicks on an object
+	 * 
+	 * @author amy
+	 *
+	 */
+	class GUIMouseListener extends MouseAdapter {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			Point point = e.getPoint();
+			Position clickPosition = new Position(point.getX(), point.getY());
+			
+			// only listens to left clicks
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				// get the set of all objects and figure out if the user clicked inside an object
+				Set<AbstractObject> allObjects = simulator.getAllObjects();
+				Toroidal2DPhysics space = simulator.getSimulatedSpace();
+				
+				for (AbstractObject obj : allObjects) {
+					if (space.findShortestDistance(clickPosition, obj.getPosition()) <= obj.getRadius()) {
+						infoComponent.setClickedObject(obj);
+					}
+				}
+				
+			}
+		}
+	}
+
+
+	/**
 	 * Toggle the paused state
 	 */
 	protected void togglePause() {
 		isPaused = !isPaused;
-		spacewarSimulator.setPaused(isPaused);
+		simulator.setPaused(isPaused);
 
 		if (isPaused) {
 			System.out.println("Pausing spacewar");
@@ -153,16 +192,16 @@ public class SpaceSettlersGUI {
 	 * Double the sim speed (by halving graphics sleep)
 	 */
 	protected void doubleSpeed() {
-		int newSpeed = Math.max(5, spacewarSimulator.getGraphicsSleep() / 2);
-		spacewarSimulator.setGraphicsSleep(newSpeed);
+		int newSpeed = Math.max(5, simulator.getGraphicsSleep() / 2);
+		simulator.setGraphicsSleep(newSpeed);
 	}
 
 	/**
 	 * Slow the sim speed (by doubling graphics sleep)
 	 */
 	protected void slowSpeed() {
-		int newSpeed = Math.min(spacewarSimulator.getGraphicsSleep() * 2, 240);
-		spacewarSimulator.setGraphicsSleep(newSpeed);
+		int newSpeed = Math.min(simulator.getGraphicsSleep() * 2, 240);
+		simulator.setGraphicsSleep(newSpeed);
 	}
 
 	
@@ -175,13 +214,13 @@ public class SpaceSettlersGUI {
 //
 	/**
 	 * Redraws the graphics
-	 * @param spacewarSimulator
+	 * @param simulator
 	 */
 	public void redraw() {
-		infoComponent.setSimulator(spacewarSimulator);
+		infoComponent.setSimulator(simulator);
 		infoComponent.updateData();
 		//mainFrame.paintComponents(getGraphics());
-		mainComponent.setSimulator(spacewarSimulator);
+		mainComponent.setSimulator(simulator);
 		mainFrame.repaint();
 	}
 	
@@ -208,7 +247,7 @@ public class SpaceSettlersGUI {
 			helpText += " Use the arrow keys to move in the associated direction.  Note that they give you acceleration in the direction of the arrow.\n";
 			helpText += " The space bar will fire missiles.\n\n";
 			helpText += " Mouse commands;\n";
-			helpText += " Click anywhere in the GUI to have your agent fly to that location.  Don't forget the world is toroidal!";
+			helpText += " Right click anywhere in the GUI to have your agent fly to that location.  Don't forget the world is toroidal!";
 			JTextArea helpTextArea = new JTextArea(helpText);
 			helpTextArea.setEditable(false);
 			
