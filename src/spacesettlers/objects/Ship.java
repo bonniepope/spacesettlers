@@ -254,6 +254,4 @@ public class Ship extends AbstractActionableObject {
 		}
 	}		
 
-	
-	
 }

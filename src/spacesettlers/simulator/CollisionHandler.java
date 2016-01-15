@@ -114,7 +114,7 @@ public class CollisionHandler {
 			// it hit a ship
 			firingShip.incrementHits();
 
-			// if the bullet killed the ship, transfer the resourcesAvailable
+			// if the bullet killed the ship, credit the ship that hit it
 			if (ship.getEnergy() <= 0) {
 				//System.out.println("ship " + firingShip.getTeamName() + " stealing resourcesAvailable " + shipMoney + " from " + ship.getTeamName() + ship.getId());
 				

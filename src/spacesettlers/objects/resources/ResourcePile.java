@@ -136,6 +136,18 @@ public class ResourcePile {
 	}
 
 	/**
+	 * Computes and returns the mass of the resources
+	 * 
+	 * @return the mass of the resources
+	 */
+	public int getMass() {
+		int mass = (int) (resources.get(ResourceTypes.FUEL) * ResourceFactory.FUEL_DENSITY +
+				resources.get(ResourceTypes.WATER) * ResourceFactory.WATER_DENSITY + 
+				resources.get(ResourceTypes.METALS) * ResourceFactory.METALS_DENSITY);
+		return mass;
+	}
+	
+	/**
 	 * Returns the total resources (just a sum, used for scoring)
 	 * 
 	 * @return the total resources collected (type doesn't matter)

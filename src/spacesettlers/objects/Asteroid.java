@@ -15,7 +15,7 @@ import spacesettlers.utilities.Position;
 public class Asteroid extends AbstractObject {
 	public static final int MIN_ASTEROID_RADIUS = 5;
 	public static final int MAX_ASTEROID_RADIUS = 15;
-	public static final int ASTEROID_MASS = 1000;
+	public static final int MIN_ASTEROID_MASS = 2000;
 	
 	private double fuelProportion, waterProportion, metalsProportion;
 	
@@ -24,8 +24,19 @@ public class Asteroid extends AbstractObject {
      */
     boolean isMineable;
     
+    /**
+     * Create an asteroid with proportions of resources (from config file)
+     * 
+     * @param location
+     * @param mineable
+     * @param radius
+     * @param moveable
+     * @param fuel
+     * @param water
+     * @param metals
+     */
     public Asteroid(Position location, boolean mineable, int radius, boolean moveable, double fuel, double water, double metals) {
-		super(ASTEROID_MASS, radius, location);
+		super(MIN_ASTEROID_MASS, radius, location);
 		
 		setDrawable(true);
 		setAlive(true);
@@ -40,7 +51,42 @@ public class Asteroid extends AbstractObject {
 			resetResources();
 		} 
 		
+		// reset the mass based on the created resources
+		super.setMass(MIN_ASTEROID_MASS + resources.getMass());
 	}
+
+    /**
+     * Create an asteroid with an initial resource pile (from a dead ship)
+     * 
+     * @param location
+     * @param mineable
+     * @param radius
+     * @param moveable
+     * @param initialResources
+     */
+    public Asteroid(Position location, boolean mineable, int radius, boolean moveable, ResourcePile initialResources) {
+		super(MIN_ASTEROID_MASS, radius, location);
+		
+		setDrawable(true);
+		setAlive(true);
+		isMineable = mineable;
+		graphic = new AsteroidGraphics(this);
+		this.isMoveable = moveable;
+		
+    	resources.setResources(ResourceTypes.FUEL, initialResources.getResourceQuantity(ResourceTypes.FUEL));
+    	resources.setResources(ResourceTypes.WATER, initialResources.getResourceQuantity(ResourceTypes.WATER));
+    	resources.setResources(ResourceTypes.METALS, initialResources.getResourceQuantity(ResourceTypes.METALS));
+		
+    	double normalize = initialResources.getResourceQuantity(ResourceTypes.FUEL) + 
+    			initialResources.getResourceQuantity(ResourceTypes.WATER) + initialResources.getResourceQuantity(ResourceTypes.METALS);
+		this.fuelProportion = initialResources.getResourceQuantity(ResourceTypes.FUEL) / normalize;
+		this.waterProportion = initialResources.getResourceQuantity(ResourceTypes.WATER) / normalize;
+		this.metalsProportion = initialResources.getResourceQuantity(ResourceTypes.METALS) / normalize;
+		
+		// reset the mass based on the created resources
+		super.setMass(MIN_ASTEROID_MASS + resources.getMass());
+	}
+    
     
     /**
      * Make a copy for security

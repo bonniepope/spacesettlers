@@ -25,7 +25,7 @@ abstract public class AbstractObject {
 	/**
 	 * The mass of the object
 	 */
-	protected int mass;
+	protected int mass, originalMass;
 	
 	/**
 	 * Is the object alive?  Some objects can never die but some can.
@@ -70,11 +70,11 @@ abstract public class AbstractObject {
 	 */
 	public AbstractObject(int mass, int radius) {
 		this.mass = mass;
+		this.originalMass = mass;
 		this.radius = radius;
 		position = new Position(0,0);
 		this.id = UUID.randomUUID();
 		resources = new ResourcePile();
-
 	}
 
 	/**
@@ -82,6 +82,7 @@ abstract public class AbstractObject {
 	 */
 	public AbstractObject(int mass, int radius, Position position) {
 		this.mass = mass;
+		this.originalMass = mass;
 		this.radius = radius;
 		this.position = position;
 		this.id = UUID.randomUUID();
@@ -170,6 +171,7 @@ abstract public class AbstractObject {
 	 */
 	public void addResources(ResourcePile newResources) {
 		resources.add(newResources);
+		setMass(mass + resources.getMass());
 	}
 	
 	/**
@@ -186,6 +188,7 @@ abstract public class AbstractObject {
 	 */
 	public void resetResources() {
 		resources.reset();
+		setMass(originalMass);
 	}
 	
 

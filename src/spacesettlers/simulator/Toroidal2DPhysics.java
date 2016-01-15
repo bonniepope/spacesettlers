@@ -23,6 +23,7 @@ import spacesettlers.objects.powerups.PowerupDoubleMaxEnergy;
 import spacesettlers.objects.powerups.PowerupDoubleWeapon;
 import spacesettlers.objects.powerups.PowerupToggleShield;
 import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.objects.weapons.AbstractWeapon;
 import spacesettlers.utilities.Movement;
 import spacesettlers.utilities.Position;
@@ -93,6 +94,7 @@ public class Toroidal2DPhysics {
 	public static double MAX_TRANSLATIONAL_VELOCITY = 200;
 	public static double MAX_ANGULAR_VELOCITY = Math.PI;
 	public static double ENERGY_PENALTY = 0.5;
+	public static double MASS_PENALTY = 0.001;
 
 	/**
 	 * Handles collisions between spacewar objects
@@ -512,11 +514,13 @@ public class Toroidal2DPhysics {
 				Position newPostion = applyMovement(currentPosition, actionMovement, timeStep);
 				ship.setPosition(newPostion);
 				
-				// spent ship energy proportional to its acceleration (old formula used velocity)
+				// spend ship energy proportional to its acceleration (old formula used velocity) and mass (new for space settlers
+				// since resources cost mass)
 				//double penalty = ENERGY_PENALTY * -Math.abs(ship.getPosition().getTotalTranslationalVelocity());
 				double accel1 = Math.abs(actionMovement.getAngularAccleration());
 				double accel2 = actionMovement.getTranslationalAcceleration().getMagnitude();
 				int penalty = (int) (ENERGY_PENALTY * Math.max(accel1, accel2));
+				penalty += (MASS_PENALTY * ship.getMass());
 				ship.updateEnergy(-penalty);
 				
 //				if (!ship.isAlive()) {
@@ -551,6 +555,14 @@ public class Toroidal2DPhysics {
 		// from when it was called inside updateEnergy
 		for (Ship ship : ships){
 			if (ship.getEnergy() <= 0 && ship.isAlive() == true) {
+				// drop any resources that the ship was carrying
+				ResourcePile resources = ship.getResources();
+				if (resources.getTotal() > 0) {
+					Asteroid newAsteroid = new Asteroid(ship.getPosition(), true, ship.getRadius(), true, resources);
+					this.addObject(newAsteroid);
+				}
+				
+				// set the ship to dead last (so we can grab its resources first)
 				ship.setAlive(false);
 			}
 		}
