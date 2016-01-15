@@ -11,6 +11,8 @@ public class ResourceFactory {
 	public static double FUEL_DENSITY = 0.35;
 	public static double METALS_DENSITY = 0.45;
 	public static double WATER_DENSITY = 0.25;
+
+	public static double REFINED_RESOURCE_DENSITY_MULTIPLIER = 0.25;
 	
 	public static int getResourceQuantity(ResourceTypes type, int radius) {
 		double area = Math.PI * radius * radius;

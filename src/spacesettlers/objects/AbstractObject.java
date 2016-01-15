@@ -3,6 +3,7 @@ package spacesettlers.objects;
 import java.util.UUID;
 
 import spacesettlers.graphics.SpacewarGraphics;
+import spacesettlers.objects.resources.ResourceFactory;
 import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.utilities.Position;
 
@@ -171,7 +172,7 @@ abstract public class AbstractObject {
 	 */
 	public void addResources(ResourcePile newResources) {
 		resources.add(newResources);
-		setMass(mass + resources.getMass());
+		setMass((int) (ResourceFactory.REFINED_RESOURCE_DENSITY_MULTIPLIER * resources.getMass() + mass));
 	}
 	
 	/**

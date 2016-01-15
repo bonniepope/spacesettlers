@@ -117,7 +117,7 @@ public class SpaceSettlersGUI {
 			MouseAdapter mouseListen = team.getMouseAdapter();
 			if (listener != null) {
 				mainComponent.addMouseListener(mouseListen);
-				mainComponent.addMouseMotionListener(mouseListen);
+				//mainComponent.addMouseMotionListener(mouseListen);
 			}
 
 		}
@@ -143,7 +143,7 @@ public class SpaceSettlersGUI {
 	 */
 	class GUIMouseListener extends MouseAdapter {
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void mouseReleased(MouseEvent e) {
 			Point point = e.getPoint();
 		
 			Position clickPosition = new Position(point.getX(), point.getY());

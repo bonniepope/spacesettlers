@@ -93,8 +93,7 @@ public class Toroidal2DPhysics {
 	 */
 	public static double MAX_TRANSLATIONAL_VELOCITY = 200;
 	public static double MAX_ANGULAR_VELOCITY = Math.PI;
-	public static double ENERGY_PENALTY = 0.5;
-	public static double MASS_PENALTY = 0.001;
+	public static double ENERGY_PENALTY = 0.005;
 
 	/**
 	 * Handles collisions between spacewar objects
@@ -517,10 +516,11 @@ public class Toroidal2DPhysics {
 				// spend ship energy proportional to its acceleration (old formula used velocity) and mass (new for space settlers
 				// since resources cost mass)
 				//double penalty = ENERGY_PENALTY * -Math.abs(ship.getPosition().getTotalTranslationalVelocity());
-				double accel1 = Math.abs(actionMovement.getAngularAccleration());
-				double accel2 = actionMovement.getTranslationalAcceleration().getMagnitude();
-				int penalty = (int) (ENERGY_PENALTY * Math.max(accel1, accel2));
-				penalty += (MASS_PENALTY * ship.getMass());
+				double angularAccel = Math.abs(actionMovement.getAngularAccleration());
+				double angularInertia = (3.0 * ship.getMass() * ship.getRadius() * angularAccel) / 2.0; 
+				double linearAccel = actionMovement.getTranslationalAcceleration().getMagnitude();
+				double linearInertia = ship.getMass() * linearAccel;
+				int penalty = (int) Math.floor(ENERGY_PENALTY * (angularInertia + linearInertia));
 				ship.updateEnergy(-penalty);
 				
 //				if (!ship.isAlive()) {
@@ -558,7 +558,10 @@ public class Toroidal2DPhysics {
 				// drop any resources that the ship was carrying
 				ResourcePile resources = ship.getResources();
 				if (resources.getTotal() > 0) {
-					Asteroid newAsteroid = new Asteroid(ship.getPosition(), true, ship.getRadius(), true, resources);
+					Position newPosition = ship.getPosition();
+					newPosition.setTranslationalVelocity(new Vector2D(0,0));
+					newPosition.setAngularVelocity(0.0);
+					Asteroid newAsteroid = new Asteroid(newPosition, true, ship.getRadius(), true, resources);
 					this.addObject(newAsteroid);
 				}
 				

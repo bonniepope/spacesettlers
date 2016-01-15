@@ -214,15 +214,13 @@ public class CollisionHandler {
 		if (object.getClass() == Ship.class) {
 			Ship ship = (Ship) object;
 			ship.addResources(asteroid.getResources());
+			asteroid.setAlive(false);
 			//System.out.println("ship " + ship.getTeamName() + ship.getId() +" now has resourcesAvailable " + ship.getMoney());
 		}
 		
-		// anything that runs into a mineable asteroids makes it disappear 
-		asteroid.setAlive(false);
-		
-		if (object.getClass() == Asteroid.class) {
-			object.setAlive(false);
-		}
+		//if (object.getClass() == Asteroid.class) {
+		//	object.setAlive(false);
+		//}
 
 	}
 
