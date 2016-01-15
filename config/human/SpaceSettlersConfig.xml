@@ -82,7 +82,7 @@
 		<!-- The maximum initial velocity of a move-able asteroid -->
 		<maxInitialVelocity>15</maxInitialVelocity>
 		
-		<!-- The probability of each type of asteroids, needs to add to 1.  This is for fuel. -->
+		<!-- The average proportion of each type of resource in an asteroid.  This needs to add to 1. -->
 		<probabilityFuelType>0.2</probabilityFuelType>
 		<probabilityWaterType>0.5</probabilityWaterType>
 		<probabilityMetalsType>0.3</probabilityMetalsType>

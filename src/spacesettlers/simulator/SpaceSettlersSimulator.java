@@ -250,20 +250,20 @@ public class SpaceSettlersSimulator {
 				moveable = true;
 			}
 
-			// choose the asteroid type
-			prob = random.nextDouble();
-			ResourceTypes type;
-			if (prob <= asteroidConfig.getProbabilityFuelType()) {
-				type = ResourceTypes.FUEL;
-			} else if (prob <= (asteroidConfig.getProbabilityFuelType() + asteroidConfig.getProbabilityMetalsType())) {
-				type = ResourceTypes.METALS;
-			} else {
-				type = ResourceTypes.WATER;
-			}
-
+			// choose the asteroid mixture
+			double fuel = random.nextDouble() * asteroidConfig.getProbabilityFuelType();
+			double water = random.nextDouble() * asteroidConfig.getProbabilityWaterType(); 
+			double metals = random.nextDouble() * asteroidConfig.getProbabilityMetalsType(); 
+			
+			// renormalize so it all adds to 1
+			double normalize = fuel + water + metals;
+			fuel = fuel / normalize;
+			water = water / normalize;
+			metals = metals / normalize;
+			
 			// create the asteroid
 			Asteroid asteroid = new Asteroid(simulatedSpace.getRandomFreeLocation(random, radius * 2), 
-					mineable, radius, moveable, type);
+					mineable, radius, moveable, fuel, water, metals);
 			simulatedSpace.addObject(asteroid);
 
 			if (asteroid.isMoveable()) {

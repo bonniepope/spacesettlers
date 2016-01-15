@@ -10,10 +10,8 @@ import org.junit.Test;
 
 import spacesettlers.objects.Asteroid;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.objects.resources.ResourceTypes;
-import spacesettlers.simulator.CollisionHandler;
-import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
 import spacesettlers.utilities.Vector2D;
 
@@ -126,7 +124,7 @@ public class TestCollisionHandler {
 
 		Position asteroid2Pos = new Position(0, 10, -Math.PI/4);
 		asteroid2Pos.setTranslationalVelocity(new Vector2D(0, -10));
-		asteroid = new Asteroid(asteroid2Pos, false, 10, true, ResourceTypes.WATER);
+		asteroid = new Asteroid(asteroid2Pos, false, 10, true, .33, .33, .34);
 		
 		collisionHandler.collide(ship1, asteroid, space);
 		
@@ -148,7 +146,7 @@ public class TestCollisionHandler {
 
 		Position asteroid2Pos = new Position(10, 0, -Math.PI/4);
 		asteroid2Pos.setTranslationalVelocity(new Vector2D(-10, 0));
-		asteroid = new Asteroid(asteroid2Pos, false, 10, true, ResourceTypes.WATER);
+		asteroid = new Asteroid(asteroid2Pos, false, 10, true, .33, .33, .34);
 		
 		collisionHandler.collide(ship1, asteroid, space);
 		
@@ -166,11 +164,11 @@ public class TestCollisionHandler {
 		
 		Position position1 = new Position(0, 0, Math.PI / 4);
 		position1.setTranslationalVelocity(new Vector2D(20, 0));
-		asteroid1 = new Asteroid(position1, false, 10, true, ResourceTypes.WATER);
+		asteroid1 = new Asteroid(position1, false, 10, true, .33, .33, .34);
 
 		Position position2 = new Position(10, 0, -Math.PI/4);
 		position2.setTranslationalVelocity(new Vector2D(-10, 0));
-		asteroid2 = new Asteroid(position2, false, 10, true, ResourceTypes.WATER);
+		asteroid2 = new Asteroid(position2, false, 10, true, .33, .33, .34);
 		
 		collisionHandler.collide(asteroid1, asteroid2, space);
 		
@@ -187,10 +185,10 @@ public class TestCollisionHandler {
 		
 		Position position1 = new Position(0, 0, Math.PI / 4);
 		position1.setTranslationalVelocity(new Vector2D(20, 0));
-		asteroid1 = new Asteroid(position1, false, 10, true, ResourceTypes.WATER);
+		asteroid1 = new Asteroid(position1, false, 10, true, .33, .33, .34);
 
 		Position position2 = new Position(10, 0, -Math.PI/4);
-		asteroid2 = new Asteroid(position2, false, 10, false, ResourceTypes.WATER);
+		asteroid2 = new Asteroid(position2, false, 10, false, .33, .33, .34);
 		
 		collisionHandler.collide(asteroid1, asteroid2, space);
 		
@@ -200,6 +198,33 @@ public class TestCollisionHandler {
 		assertEquals(asteroid2.getPosition().getTranslationalVelocityY(), 0, 0.01);
 		
 	}
+	
+	@Test
+	public void testCollidingWithMineableAsteroid() {
+		Ship ship1;
+		Asteroid asteroid;
+
+		Position ship1Pos = new Position(0, 0, Math.PI / 4);
+		ship1Pos.setTranslationalVelocity(new Vector2D(20, 0));
+		ship1 = new Ship("team1", Color.BLUE, ship1Pos);
+
+		Position asteroid2Pos = new Position(10, 0, -Math.PI/4);
+		asteroid2Pos.setTranslationalVelocity(new Vector2D(-10, 0));
+		asteroid = new Asteroid(asteroid2Pos, true, 10, true, .33, .33, .34);
+		
+		ResourcePile asteroidResources = asteroid.getResources();
+		
+		collisionHandler.collide(ship1, asteroid, space);
+		
+		assertEquals(ship1.getResources().getResourceQuantity(ResourceTypes.FUEL), 
+				asteroidResources.getResourceQuantity(ResourceTypes.FUEL), 0.0);
+		assertEquals(ship1.getResources().getResourceQuantity(ResourceTypes.WATER), 
+				asteroidResources.getResourceQuantity(ResourceTypes.WATER), 0.0);
+		assertEquals(ship1.getResources().getResourceQuantity(ResourceTypes.METALS), 
+				asteroidResources.getResourceQuantity(ResourceTypes.METALS), 0.0);
+		
+	}
+
 
 	
 }

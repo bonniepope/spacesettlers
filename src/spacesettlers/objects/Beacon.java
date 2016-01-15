@@ -32,6 +32,9 @@ public class Beacon extends AbstractObject {
 		return newBeacon;
 	}
 
-
+	public String toString() {
+		String str = "Beacon id " + id + " energy boost " + BEACON_ENERGY_BOOST;
+		return str;
+	}
 
 }

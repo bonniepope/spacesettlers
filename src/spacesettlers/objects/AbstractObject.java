@@ -3,6 +3,7 @@ package spacesettlers.objects;
 import java.util.UUID;
 
 import spacesettlers.graphics.SpacewarGraphics;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.utilities.Position;
 
 /**
@@ -43,6 +44,13 @@ abstract public class AbstractObject {
 	protected boolean isMoveable;
 	
 	/**
+	 * The resources available from this object (if it is mineable) or that this object is holding (ship and base).
+	 * Ignored for objects that don't use this (such as beacons).
+	 */
+	protected ResourcePile resources;
+	
+	
+	/**
 	 * The graphics for this object in the GUI
 	 */
 	protected SpacewarGraphics graphic;
@@ -65,6 +73,7 @@ abstract public class AbstractObject {
 		this.radius = radius;
 		position = new Position(0,0);
 		this.id = UUID.randomUUID();
+		resources = new ResourcePile();
 
 	}
 
@@ -76,6 +85,7 @@ abstract public class AbstractObject {
 		this.radius = radius;
 		this.position = position;
 		this.id = UUID.randomUUID();
+		resources = new ResourcePile();
 	}
 
 	
@@ -152,6 +162,32 @@ abstract public class AbstractObject {
 	public void setMass(int mass) {
 		this.mass = mass;
 	}
+
+	/**
+	 * Add a list of new resources to the ship/base cargo bay
+	 * 
+	 * @param newResources new list of AbstractResource to add to the cargo bay
+	 */
+	public void addResources(ResourcePile newResources) {
+		resources.add(newResources);
+	}
+	
+	/**
+	 * Get the current available resources
+	 * 
+	 * @return the ResourcePile of resources held by this object
+	 */
+	public ResourcePile getResources() {
+		return resources;
+	}
+
+	/**
+	 * Reset the list of resources (probably because the ship died)
+	 */
+	public void resetResources() {
+		resources.reset();
+	}
+	
 
 	/**
 	 * @return the graphic, which is what is drawn in the graphics window

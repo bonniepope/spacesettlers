@@ -9,7 +9,6 @@ import java.util.List;
 import spacesettlers.actions.AbstractAction;
 import spacesettlers.graphics.ShipGraphics;
 import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
-import spacesettlers.objects.resources.AbstractResource;
 import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.objects.weapons.EMP;
@@ -49,12 +48,6 @@ public class Ship extends AbstractActionableObject {
 	 * Last time the respawn counter was used
 	 */
 	int lastRespawnCounter;
-
-	/**
-	 * Current resourcesAvailable a ship is holding (from the mined asteroids).  Note the 
-	 * resourcesAvailable has to be turned into the base before it can be used by the team.
-	 */
-	ResourcePile resources;
 
 	/**
 	 * The color for this team
@@ -125,39 +118,6 @@ public class Ship extends AbstractActionableObject {
 		energy = SHIP_INITIAL_ENERGY;
 	}
 
-	/**
-	 * Add a new resource to the ships cargo bay
-	 * 
-	 * @param newResource new AbstractResource to add to the cargo bay
-	 */
-	public void addResource(AbstractResource newResource) {
-		resources.add(newResource);
-	}
-
-	/**
-	 * Add a list of new resources to the ships cargo bay
-	 * 
-	 * @param newResources new list of AbstractResource to add to the cargo bay
-	 */
-	public void addResources(ResourcePile newResources) {
-		resources.add(newResources);
-	}
-	
-	/**
-	 * Get the current available resources
-	 * 
-	 * @return the ResourcePile of resources held by this ship
-	 */
-	public ResourcePile getResources() {
-		return resources;
-	}
-
-	/**
-	 * Reset the list of resources (probably because the ship died)
-	 */
-	public void resetResources() {
-		resources.reset();
-	}
 	
 	/**
 	 * Get the color of this team
@@ -264,7 +224,7 @@ public class Ship extends AbstractActionableObject {
 	}
 
 	public String toString() {
-		String str = "Ship id " + id + " team " + teamName + " at " + position;
+		String str = "Ship id " + id + " team " + teamName + " at " + position + " resources " + resources;
 		return str;
 	}
 

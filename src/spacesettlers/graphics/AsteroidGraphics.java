@@ -17,14 +17,10 @@ import spacesettlers.utilities.Position;
 public class AsteroidGraphics extends SpacewarGraphics {
     public static final Color REGULAR_ASTEROID_COLOR = new Color(126, 96, 58);
     public static final Color REGULAR_LINE_COLOR = new Color(162, 124, 76);
-    public static final Color WATER_ASTEROID_COLOR = new Color(0,191,255);
-    public static final Color WATER_LINE_COLOR = new Color(30,144,255);
+    public static final Color WATER_ASTEROID_COLOR = new Color(0,0,255);
     public static final Color FUEL_ASTEROID_COLOR = new Color(0,255,0);
-    public static final Color FUEL_LINE_COLOR = new Color(50,205,50);
     public static final Color METALS_ASTEROID_COLOR = new Color(192, 192, 192);
-    public static final Color METALS_LINE_COLOR = new Color(211, 211, 211);
     public static final Color MOVEABLE_LINE_COLOR = new Color(1, 124, 76);
-    public static final Color MONEY_COLOR = Color.WHITE;
 
     Asteroid asteroid;
     
@@ -39,55 +35,43 @@ public class AsteroidGraphics extends SpacewarGraphics {
         final float radius = asteroid.getRadius();
         final float diameter = asteroid.getRadius() * 2;
 
-        final Ellipse2D.Double shape = new Ellipse2D.Double(drawLocation.getX() - radius,
-        		drawLocation.getY() - radius, diameter, diameter);
 
         // show minable asteroids in a different color
         if (asteroid.isMineable()) {
-        	switch (asteroid.getType()) {
-        	case FUEL:
-        		graphics.setColor(FUEL_ASTEROID_COLOR);
-        		break;
-        	case WATER:
-        		graphics.setColor(WATER_ASTEROID_COLOR);
-        		break;
-        	case METALS:
-        		graphics.setColor(METALS_ASTEROID_COLOR);
-        	}
-        } else {
-        	graphics.setColor(REGULAR_ASTEROID_COLOR);
-        }
-        graphics.fill(shape);
+        	// mineable asteroids have concentric circles showing the proportion of the different resources
+        	
+        	double fuel = asteroid.getFuelProportion();
+        	double water = asteroid.getWaterProportion();
+        	double metals = asteroid.getMetalsProportion();
+        	
+        	double fuelDiameter = fuel * diameter;
+            double waterDiameter = (water + fuel) * diameter;
+            double metalsDiameter = Math.round((water + fuel + metals) * diameter);
 
-        /*
-        // if the asteroid is moveable, give it a different color outline
-        graphics.setStroke(JSpaceSettlersComponent.STROKE);
-        if (asteroid.isMoveable()) {
-        	graphics.setColor(MOVEABLE_LINE_COLOR);
-        } else if (asteroid.isMineable()) {
-        	switch (asteroid.getAsteroidType()) {
-        	case FUEL:
-        		graphics.setColor(FUEL_LINE_COLOR);
-        		break;
-        	case WATER:
-        		graphics.setColor(WATER_LINE_COLOR);
-        		break;
-        	case METALS:
-        		graphics.setColor(METALS_LINE_COLOR);
-        	}
-        } else {
-        	graphics.setColor(REGULAR_LINE_COLOR);
-        }
-        */
-        graphics.draw(shape);
+            Ellipse2D.Double shape = new Ellipse2D.Double(drawLocation.getX() - (metalsDiameter / 2),
+            		drawLocation.getY() - (metalsDiameter / 2), metalsDiameter, metalsDiameter);
+            graphics.setColor(METALS_ASTEROID_COLOR);
+            graphics.fill(shape);
 
-        
-        // put the resourcesAvailable an asteroid can be mined for in the center of the asteroid
-        if (asteroid.isMineable()) {
-            //graphics.setFont(JSpaceSettlersComponent.FONT8);
-        	//graphics.setColor(MONEY_COLOR);
-        	//graphics.drawString(Integer.toString(asteroid.getResourcesAvailable()), 
-        	//		(int)drawLocation.getX() - radius + 2, (int)drawLocation.getY() - 6);
+            shape = new Ellipse2D.Double(drawLocation.getX() - (waterDiameter / 2),
+            		drawLocation.getY() - (waterDiameter / 2), waterDiameter, waterDiameter);
+            graphics.setColor(WATER_ASTEROID_COLOR);
+            graphics.fill(shape);
+
+            shape = new Ellipse2D.Double(drawLocation.getX() - (fuelDiameter / 2),
+            		drawLocation.getY() - (fuelDiameter / 2), fuelDiameter, fuelDiameter);
+            graphics.setColor(FUEL_ASTEROID_COLOR);
+            graphics.fill(shape);
+
+
+            
+        } else {
+        	// non-mineable asteroid is just a brown circle
+            Ellipse2D.Double fullShape = new Ellipse2D.Double(drawLocation.getX() - radius,
+            		drawLocation.getY() - radius, diameter, diameter);
+
+            graphics.setColor(REGULAR_ASTEROID_COLOR);
+            graphics.fill(fullShape);
         }
         
 	}

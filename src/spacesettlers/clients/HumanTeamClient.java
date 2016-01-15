@@ -1,6 +1,5 @@
 package spacesettlers.clients;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -9,26 +8,23 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import spacesettlers.actions.AbstractAction;
 import spacesettlers.actions.DoNothingAction;
 import spacesettlers.actions.MoveAction;
 import spacesettlers.actions.PurchaseCosts;
-import spacesettlers.actions.RawAction;
-import spacesettlers.actions.AbstractAction;
 import spacesettlers.actions.PurchaseTypes;
-import spacesettlers.graphics.CircleGraphics;
+import spacesettlers.actions.RawAction;
 import spacesettlers.graphics.LineGraphics;
 import spacesettlers.graphics.SpacewarGraphics;
 import spacesettlers.graphics.StarGraphics;
-import spacesettlers.objects.Ship;
 import spacesettlers.objects.AbstractActionableObject;
 import spacesettlers.objects.AbstractObject;
+import spacesettlers.objects.Ship;
 import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
-import spacesettlers.objects.resources.AbstractResource;
 import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.simulator.Toroidal2DPhysics;
 import spacesettlers.utilities.Position;
@@ -279,7 +275,7 @@ public class HumanTeamClient extends TeamClient {
 			Point point = e.getPoint();
 			//System.out.println("User clicked at " + point.x + ", " + point.y);
 			// only listen to the right button
-			if (e.getButton() == MouseEvent.BUTTON3) {
+			if (e.getButton() == MouseEvent.BUTTON3 || e.isAltDown()) {
 				lastMouseClick = new Position(point.x, point.y);
 			}
 		}

@@ -15,7 +15,6 @@ import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
 import spacesettlers.objects.AbstractActionableObject;
 import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
-import spacesettlers.objects.resources.AbstractResource;
 import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.simulator.Toroidal2DPhysics;

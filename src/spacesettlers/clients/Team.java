@@ -5,7 +5,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -22,15 +21,13 @@ import spacesettlers.actions.AbstractAction;
 import spacesettlers.actions.PurchaseCosts;
 import spacesettlers.actions.PurchaseTypes;
 import spacesettlers.graphics.SpacewarGraphics;
+import spacesettlers.objects.AbstractActionableObject;
 import spacesettlers.objects.Base;
 import spacesettlers.objects.Ship;
-import spacesettlers.objects.AbstractActionableObject;
 import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
-import spacesettlers.objects.resources.ResourceTypes;
+import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.simulator.SpaceSettlersSimulator;
 import spacesettlers.simulator.Toroidal2DPhysics;
-import spacesettlers.objects.resources.AbstractResource;
-import spacesettlers.objects.resources.ResourcePile;
 
 /**
  * A team holds the ships and a pointer to the client

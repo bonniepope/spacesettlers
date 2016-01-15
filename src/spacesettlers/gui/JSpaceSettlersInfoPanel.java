@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import spacesettlers.clients.Team;
+import spacesettlers.objects.AbstractObject;
 import spacesettlers.simulator.SpaceSettlersSimulator;
 
 /**
@@ -35,6 +36,8 @@ public class JSpaceSettlersInfoPanel extends JPanel {
 	GlobalInfoPanel globalInfo;
 	
 	Map<String, TeamInfoPanel> teamComponents;
+	
+	ObjectInfoPanel objectPanel;
 
 	public JSpaceSettlersInfoPanel(SpaceSettlersSimulator simulator) {
 		super();
@@ -61,6 +64,12 @@ public class JSpaceSettlersInfoPanel extends JPanel {
             add(tInfo, constraints);
             teamNum++;
         }
+        
+        objectPanel = new ObjectInfoPanel();
+		constraints.gridx = 0;
+		constraints.gridy = simulator.getTeams().size() + 1;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        add(objectPanel, constraints);
 	}
 	
 	public void updateData() {
@@ -69,6 +78,8 @@ public class JSpaceSettlersInfoPanel extends JPanel {
 		for (TeamInfoPanel panel : teamComponents.values()) {
 			panel.updateData(simulator);
 		}
+		
+		objectPanel.updateData(simulator);
 	}
 	
 
@@ -78,6 +89,14 @@ public class JSpaceSettlersInfoPanel extends JPanel {
 	 */
 	public void setSimulator(SpaceSettlersSimulator spacewarSimulator) {
 		simulator = spacewarSimulator;
+	}
+
+	/**
+	 * Sets the object to show in the extra info panel 
+	 * @param obj
+	 */
+	public void setClickedObject(AbstractObject clickedObject) {
+		objectPanel.setSelectedObject(clickedObject);
 	}
 
 	

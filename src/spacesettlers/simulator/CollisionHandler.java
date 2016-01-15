@@ -213,7 +213,7 @@ public class CollisionHandler {
 		// if a ship ran into it, it "mines" the asteroid
 		if (object.getClass() == Ship.class) {
 			Ship ship = (Ship) object;
-			ship.addResource(asteroid.getResource());
+			ship.addResources(asteroid.getResources());
 			//System.out.println("ship " + ship.getTeamName() + ship.getId() +" now has resourcesAvailable " + ship.getMoney());
 		}
 		

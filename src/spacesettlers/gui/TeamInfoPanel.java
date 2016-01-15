@@ -34,6 +34,7 @@ public class TeamInfoPanel extends JPanel {
 		setLayout(new GridBagLayout());
 		
 		JLabel name = new JLabel(team.getLadderName());
+		constraints.insets = new Insets(5, 5, 5, 5);
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.gridwidth = GridBagConstraints.REMAINDER;

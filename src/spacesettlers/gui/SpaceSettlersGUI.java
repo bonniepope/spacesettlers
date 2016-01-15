@@ -43,9 +43,7 @@ public class SpaceSettlersGUI {
 	
 	JSpaceSettlersComponent mainComponent;
 	
-	JSpaceSettlersInfoPanel infoComponent;
-	
-	JPanel infoPanel, mainPanel;
+	JSpaceSettlersInfoPanel infoPanel;
 	
 	boolean isPaused = false;
 	
@@ -60,27 +58,20 @@ public class SpaceSettlersGUI {
 		this.simulator = simulator;
 		
 		mainFrame = new JFrame("Space Settlers");
-		
-		infoPanel = new JPanel();
-		mainPanel = new JPanel();
-		
-		infoComponent = new JSpaceSettlersInfoPanel(simulator);
+
+		// make the inner panel and components
+		infoPanel = new JSpaceSettlersInfoPanel(simulator);
+		infoPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 		mainComponent = new JSpaceSettlersComponent(config.getHeight(), config.getWidth());
 
-		infoPanel.add(infoComponent);
-		infoPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-
-		mainPanel.add(mainComponent);
-		MyEmptyBorder myEmptyBorder = new MyEmptyBorder();
-		mainPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		
+		// put them into the main layout
 		mainFrame.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.weightx = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.fill = GridBagConstraints.BOTH;
-		mainFrame.add(mainPanel, constraints);
+		mainFrame.add(mainComponent, constraints);
 		
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -120,19 +111,19 @@ public class SpaceSettlersGUI {
 		for (Team team : simulator.getTeams()) {
 			KeyAdapter listener = team.getKeyAdapter();
 			if (listener != null) {
-				mainFrame.addKeyListener(listener);
+				mainComponent.addKeyListener(listener);
 			}
 
 			MouseAdapter mouseListen = team.getMouseAdapter();
 			if (listener != null) {
-				mainPanel.addMouseListener(mouseListen);
-				mainPanel.addMouseMotionListener(mouseListen);
+				mainComponent.addMouseListener(mouseListen);
+				mainComponent.addMouseMotionListener(mouseListen);
 			}
 
 		}
 		
 		// add the mouse listener for the info boxes
-		mainPanel.addMouseListener(new GUIMouseListener());
+		mainComponent.addMouseListener(new GUIMouseListener());
 		
 
 		// finally draw it
@@ -154,6 +145,7 @@ public class SpaceSettlersGUI {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Point point = e.getPoint();
+		
 			Position clickPosition = new Position(point.getX(), point.getY());
 			
 			// only listens to left clicks
@@ -161,10 +153,14 @@ public class SpaceSettlersGUI {
 				// get the set of all objects and figure out if the user clicked inside an object
 				Set<AbstractObject> allObjects = simulator.getAllObjects();
 				Toroidal2DPhysics space = simulator.getSimulatedSpace();
+				//System.out.println("Received a click at " + clickPosition);
 				
 				for (AbstractObject obj : allObjects) {
+					//System.out.println("Object " + obj + " distance to click " + space.findShortestDistance(clickPosition, obj.getPosition()) + " radius is " + obj.getRadius());
 					if (space.findShortestDistance(clickPosition, obj.getPosition()) <= obj.getRadius()) {
-						infoComponent.setClickedObject(obj);
+						infoPanel.setClickedObject(obj);
+						//System.out.println("Click matched object " + obj);
+						return;
 					}
 				}
 				
@@ -205,20 +201,13 @@ public class SpaceSettlersGUI {
 	}
 
 	
-	//	/**
-//	 * @return the main graphics component for the GUI so ships and the like can be drawn on it
-//	 */
-//	public Graphics2D getGraphics() {
-//		return (Graphics2D) mainComponent.getGraphics();
-//	}
-//
 	/**
 	 * Redraws the graphics
 	 * @param simulator
 	 */
 	public void redraw() {
-		infoComponent.setSimulator(simulator);
-		infoComponent.updateData();
+		infoPanel.setSimulator(simulator);
+		infoPanel.updateData();
 		//mainFrame.paintComponents(getGraphics());
 		mainComponent.setSimulator(simulator);
 		mainFrame.repaint();
@@ -247,7 +236,7 @@ public class SpaceSettlersGUI {
 			helpText += " Use the arrow keys to move in the associated direction.  Note that they give you acceleration in the direction of the arrow.\n";
 			helpText += " The space bar will fire missiles.\n\n";
 			helpText += " Mouse commands;\n";
-			helpText += " Right click anywhere in the GUI to have your agent fly to that location.  Don't forget the world is toroidal!";
+			helpText += " Right click or alt-click in the GUI to have your agent fly to that location.  Don't forget the world is toroidal!";
 			JTextArea helpTextArea = new JTextArea(helpText);
 			helpTextArea.setEditable(false);
 			

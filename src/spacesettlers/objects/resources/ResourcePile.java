@@ -78,16 +78,6 @@ public class ResourcePile {
 	public int getResourceQuantity(ResourceTypes type) {
 		return resources.get(type);
 	}
-
-	/**
-	 * Adds the specified resource to the pile
-	 * 
-	 * @param newResource new resource to add in
-	 */
-	public void add(AbstractResource newResource) {
-		ResourceTypes type = newResource.getType();
-		resources.put(type, resources.get(type) + newResource.getResourceQuantity());
-	}
 	
 	/**
 	 * Adds two resource piles together
@@ -114,8 +104,8 @@ public class ResourcePile {
 	 */
 	public void doubleCosts() {
 		resources.put(ResourceTypes.WATER, resources.get(ResourceTypes.WATER) * 2);
-		resources.put(ResourceTypes.FUEL, resources.get(ResourceTypes.WATER) * 2);
-		resources.put(ResourceTypes.METALS, resources.get(ResourceTypes.WATER) * 2);
+		resources.put(ResourceTypes.FUEL, resources.get(ResourceTypes.FUEL) * 2);
+		resources.put(ResourceTypes.METALS, resources.get(ResourceTypes.METALS) * 2);
 	}
 
 	/**
@@ -156,6 +146,12 @@ public class ResourcePile {
 			sum += resources.get(type);
 		}
 		return sum;
+	}
+	
+	public String toString() {
+		String str = "Water: " + resources.get(ResourceTypes.WATER) + " Fuel: " + resources.get(ResourceTypes.FUEL) + 
+				" Metals: " + resources.get(ResourceTypes.METALS);
+		return str;
 	}
 
 }

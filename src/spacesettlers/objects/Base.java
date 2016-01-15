@@ -10,7 +10,6 @@ import java.util.UUID;
 import spacesettlers.clients.Team;
 import spacesettlers.graphics.BaseGraphics;
 import spacesettlers.objects.powerups.SpaceSettlersPowerupEnum;
-import spacesettlers.objects.resources.AbstractResource;
 import spacesettlers.objects.resources.ResourcePile;
 import spacesettlers.objects.resources.ResourceTypes;
 import spacesettlers.utilities.Position;
@@ -30,11 +29,6 @@ public class Base extends AbstractActionableObject {
 	 * The color of this team
 	 */
 	Color teamColor;
-	
-	/**
-	 * Resources turned in by team members (can be used to buy things)
-	 */
-	ResourcePile resources;
 	
 	/**
 	 * The team that owns this base
@@ -103,15 +97,6 @@ public class Base extends AbstractActionableObject {
 		return (energy / 2);
 	}
 	
-
-	/**
-	 * Get the team resourcesAvailable turned in so far (unspent)
-	 * @return
-	 */
-	public ResourcePile getResources() {
-		return resources;
-	}
-	
 	/**
 	 * Returns true if this is a home base for a team and false if it is a secondary base
 	 * @return
@@ -138,11 +123,13 @@ public class Base extends AbstractActionableObject {
 
 	/**
 	 * Change the resourcesAvailable amount by the specified amount.  Resources live
-	 * at a base but are available to the whole team once they arrive at a base.
+	 * at a base but are available to the whole team once they arrive at a base.  
+	 * Method is overridden to add things to the team also.
+	 * 
 	 * @param difference
 	 */
 	public void addResources(ResourcePile newResources) {
-		resources.add(newResources);
+		super.addResources(newResources);
 		
 		// and increment the resources for the entire team
 		team.incrementTotalResources(newResources);
@@ -168,5 +155,9 @@ public class Base extends AbstractActionableObject {
 		}
 	}
 
+	public String toString() {
+		String str = "Base id " + super.id + " team " + super.teamName + " at " + position + " resources " + resources;
+		return str;
+	}
 
 }
