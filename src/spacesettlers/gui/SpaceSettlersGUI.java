@@ -111,7 +111,7 @@ public class SpaceSettlersGUI {
 		for (Team team : simulator.getTeams()) {
 			KeyAdapter listener = team.getKeyAdapter();
 			if (listener != null) {
-				mainComponent.addKeyListener(listener);
+				mainFrame.addKeyListener(listener);
 			}
 
 			MouseAdapter mouseListen = team.getMouseAdapter();
