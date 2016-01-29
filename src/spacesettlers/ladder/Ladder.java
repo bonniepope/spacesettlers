@@ -109,7 +109,7 @@ public class Ladder {
 	@SuppressWarnings("unchecked")
 	public void run() {
 		ArrayList<HighLevelTeamConfig[]>clientsPerMatch = getAllClientsForAllMatches();
-
+		
 		int numGames = clientsPerMatch.size() * ladderConfig.getNumRepeatMatches();
 		System.out.println("Ladder will run " + numGames + " games");
 		int gameIndex = 0;

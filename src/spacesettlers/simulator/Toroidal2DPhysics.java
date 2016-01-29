@@ -93,7 +93,7 @@ public class Toroidal2DPhysics {
 	 */
 	public static double MAX_TRANSLATIONAL_VELOCITY = 200;
 	public static double MAX_ANGULAR_VELOCITY = Math.PI;
-	public static double ENERGY_PENALTY = 0.005;
+	public static double ENERGY_PENALTY = 0.0005;
 
 	/**
 	 * Handles collisions between spacewar objects
