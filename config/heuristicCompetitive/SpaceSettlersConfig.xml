@@ -5,7 +5,7 @@
 	<width>1600</width>
 	
 	<!-- Number of steps of simulation -->
-	<simulationSteps>5000</simulationSteps>
+	<simulationSteps>20000</simulationSteps>
 
 	<!-- Timestep for a simulation (in seconds for the physics equations) -->
 	<simulationTimeStep>0.05</simulationTimeStep>
@@ -38,15 +38,22 @@
 			<teamName>BeaconCollectorTeam</teamName>
 			<configFile>beacon-clientinit.xml</configFile>
 		</HighLevelTeamConfig>
+		<!-- Uncomment human to play against it -->
+		<!-- 
 		<HighLevelTeamConfig>
 			<teamName>HumanTeam</teamName>
 			<configFile>human-clientinit.xml</configFile>
 		</HighLevelTeamConfig>
+ 		-->
+ 		<!-- The competitive ladder will have the aggressive heuristic -->
 		<HighLevelTeamConfig>
 			<teamName>HeuristicMinerTeam</teamName>
-			<!-- Pick the one you intend to play against (self versus other) -->
 			<configFile>aggressive-heuristic-clientinit.xml</configFile>
 		</HighLevelTeamConfig>
+		<HighLevelTeamConfig>
+			<teamName>DoNothingTeam</teamName>
+			<configFile>donothing-clientinit.xml</configFile>
+		</HighLevelTeamConfig>		
 	</teams>
 
 	<!-- Each team needs a base.  Optionally, you can initialize the location of the base -->
@@ -57,11 +64,17 @@
 		<BaseConfig>
 			<teamName>BeaconCollectorTeam</teamName>
 		</BaseConfig>
+		<!-- uncomment if you want to play human -->
+		<!-- 
 		<BaseConfig>
 			<teamName>HumanTeam</teamName>
 		</BaseConfig>
+		 -->
 		<BaseConfig>
 			<teamName>HeuristicMinerTeam</teamName>
+		</BaseConfig>
+		<BaseConfig>
+			<teamName>DoNothingTeam</teamName>
 		</BaseConfig>
 	</bases>
 	

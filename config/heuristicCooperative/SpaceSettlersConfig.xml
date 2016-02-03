@@ -5,7 +5,7 @@
 	<width>1600</width>
 	
 	<!-- Number of steps of simulation -->
-	<simulationSteps>5000</simulationSteps>
+	<simulationSteps>20000</simulationSteps>
 
 	<!-- Timestep for a simulation (in seconds for the physics equations) -->
 	<simulationTimeStep>0.05</simulationTimeStep>
@@ -39,13 +39,20 @@
 			<configFile>beacon-clientinit.xml</configFile>
 		</HighLevelTeamConfig>
 		<HighLevelTeamConfig>
+			<teamName>DoNothingTeam</teamName>
+			<configFile>donothing-clientinit.xml</configFile>
+		</HighLevelTeamConfig>
+		<!-- you can uncomment the human team if you want to play against them in this environment.  Make sure to add their base below also. -->
+		<!-- 
+		<HighLevelTeamConfig>
 			<teamName>HumanTeam</teamName>
 			<configFile>human-clientinit.xml</configFile>
-		</HighLevelTeamConfig>
+		</HighLevelTeamConfig> 
+		-->
 		<HighLevelTeamConfig>
 			<teamName>HeuristicMinerTeam</teamName>
 			<!-- Pick the one you intend to play against (self versus other) -->
-			<configFile>aggressive-heuristic-clientinit.xml</configFile>
+			<configFile>passive-heuristic-clientinit.xml</configFile>
 		</HighLevelTeamConfig>
 	</teams>
 
@@ -58,8 +65,14 @@
 			<teamName>BeaconCollectorTeam</teamName>
 		</BaseConfig>
 		<BaseConfig>
+			<teamName>DoNothingTeam</teamName>
+		</BaseConfig>
+		<!-- uncomment if you want to play human -->
+		<!-- 
+		<BaseConfig>
 			<teamName>HumanTeam</teamName>
 		</BaseConfig>
+		 -->
 		<BaseConfig>
 			<teamName>HeuristicMinerTeam</teamName>
 		</BaseConfig>
