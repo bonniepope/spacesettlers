@@ -86,6 +86,16 @@ public class Team {
 	int totalBeacons;
 	
 	/**
+	 * Keep track of the total kills for the team (for the ladder, if used)
+	 */
+	int totalKills;
+	
+	/**
+	 * Keep track of the total hits for the team (for the ladder, if used)
+	 */
+	int totalHits;
+	
+	/**
 	 * The name that shows up in the ladder
 	 */
 	String ladderName;
@@ -122,6 +132,8 @@ public class Team {
 		this.maxNumberShips = maxNumberShips;
 		totalResources = new ResourcePile();
 		availableResources = new ResourcePile();
+		this.totalHits = 0;
+		this.totalKills = 0;
 		executor = null;
 	}
 	
@@ -148,6 +160,8 @@ public class Team {
 		newTeam.costToPurchase = costToPurchase.deepCopy();
 		newTeam.totalResources = new ResourcePile(totalResources);
 		newTeam.availableResources = new ResourcePile(availableResources);
+		newTeam.totalHits = this.totalHits;
+		newTeam.totalKills = this.totalKills;
 		return newTeam;
 	}
 	
@@ -417,11 +431,18 @@ public class Team {
         executor.shutdownNow();
 		
 		// figure out how many beacons the team has collected
+		// figure out how many hits and kills the team has
 		int beacons = 0;
+		int hits = 0;
+		int kills = 0;
 		for (Ship ship : teamShips) {
 			beacons += ship.getNumBeacons();
+			hits += ship.getHits();
+			kills += ship.getKills();
 		}
 		setTotalBeacons(beacons);
+		this.totalKills = kills;
+		this.totalHits = hits;
 	}
 	
 	/**
@@ -684,7 +705,14 @@ public class Team {
 		this.totalBeacons++;
 	}
 	
-	
+
+	public int getTotalKills() {
+		return totalKills;
+	}
+
+	public int getTotalHits() {
+		return totalHits;
+	}
 
 	public String getLadderName() {
 		return ladderName;

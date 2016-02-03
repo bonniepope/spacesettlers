@@ -739,6 +739,14 @@ public class SpaceSettlersSimulator {
 				}
 				team.setScore(beacons);
 			}
+		} else if (simConfig.getScoringMethod().equalsIgnoreCase("Kills")) {
+			for (Team team : teams) {
+				team.setScore(team.getTotalKills());
+			}
+		} else if (simConfig.getScoringMethod().equalsIgnoreCase("Hits")) {
+			for (Team team : teams) {
+				team.setScore(team.getTotalHits());
+			}
 		} else {
 			System.err.println("Error: Scoring method " + simConfig.getScoringMethod() + " is not recognized.  Scores will all be 0.");
 		}
