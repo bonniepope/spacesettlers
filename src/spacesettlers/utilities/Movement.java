@@ -41,7 +41,7 @@ public class Movement {
 		this.translationalAcceleration = translationalAcceleration;
 		
 		if (translationalAcceleration.getXValue() > MAX_TRANSLATIONAL_ACCELERATION) {
-			this.translationalAcceleration.setX(MAX_ANGULAR_ACCELERATION);
+			this.translationalAcceleration.setX(MAX_TRANSLATIONAL_ACCELERATION);
 		} else if (translationalAcceleration.getXValue() < -MAX_TRANSLATIONAL_ACCELERATION) {
 			this.translationalAcceleration.setX(-MAX_TRANSLATIONAL_ACCELERATION);
 		}
