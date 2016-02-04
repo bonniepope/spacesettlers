@@ -52,9 +52,9 @@ abstract public class AbstractActionableObject extends AbstractObject {
 	String teamName;
 	
 	/**
-	 * Hits and kills for this object
+	 * Hits and kills and damage for this object
 	 */
-	int hits, kills;
+	int hits, kills, damage;
 
 
 	/**
@@ -67,7 +67,7 @@ abstract public class AbstractActionableObject extends AbstractObject {
 		super(mass, radius, position);
 		currentPowerups = new HashSet<SpaceSettlersPowerupEnum>();
 		weaponCapacity = INITIAL_WEAPON_CAPACITY;
-		hits = kills = 0;
+		hits = kills = damage = 0;
 	}
 
 	/**
@@ -252,9 +252,26 @@ abstract public class AbstractActionableObject extends AbstractObject {
 	}
 
 	/**
-	 * increment the hits for this ship
+	 * increment the kill for this ship
 	 */
 	public void incrementKills() {
 		this.kills++;
 	}
+	
+	/**
+	 * Get the damage this object has made
+	 * @return the damage this object has made
+	 */
+	public int getDamage() {
+		return damage;
+	}
+
+	/**
+	 * increment the damage for this ship
+	 */
+	public void incrementDamage(int increment) {
+		this.damage += increment;
+	}
+	
+	
 }

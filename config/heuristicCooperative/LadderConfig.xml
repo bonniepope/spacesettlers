@@ -27,7 +27,7 @@
 		</HighLevelTeamConfig>
 		<HighLevelTeamConfig>
 			<teamName>HeuristicMinerTeam</teamName>
-			<configFile>aggressive-heuristic-clientinit.xml</configFile>
+			<configFile>passive-heuristic-clientinit.xml</configFile>
 			<initialRegionCenterX>640</initialRegionCenterX>
 			<initialRegionCenterY>400</initialRegionCenterY>
 			<initialRegionRadius>300</initialRegionRadius>

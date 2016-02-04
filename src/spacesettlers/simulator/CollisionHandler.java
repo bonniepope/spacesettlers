@@ -109,6 +109,7 @@ public class CollisionHandler {
 			// only take damage if not shielded
 			if (!ship.isShielded()) {
 				ship.updateEnergy(missile.getDamage());
+				firingShip.incrementDamage(-missile.getDamage());
 			}
 			
 			// it hit a ship
@@ -131,6 +132,7 @@ public class CollisionHandler {
 			// only take damage if not shielded
 			if (!base.isShielded()) {
 				base.updateEnergy(missile.getDamage());
+				firingShip.incrementDamage(-missile.getDamage());
 			}
 			
 			// it hit a base

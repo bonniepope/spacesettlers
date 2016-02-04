@@ -96,6 +96,11 @@ public class Team {
 	int totalHits;
 	
 	/**
+	 * Keep track of the total damage this ship has dealt out
+	 */
+	int totalDamage;
+	
+	/**
 	 * The name that shows up in the ladder
 	 */
 	String ladderName;
@@ -134,6 +139,7 @@ public class Team {
 		availableResources = new ResourcePile();
 		this.totalHits = 0;
 		this.totalKills = 0;
+		this.totalDamage = 0;
 		executor = null;
 	}
 	
@@ -162,6 +168,7 @@ public class Team {
 		newTeam.availableResources = new ResourcePile(availableResources);
 		newTeam.totalHits = this.totalHits;
 		newTeam.totalKills = this.totalKills;
+		newTeam.totalDamage = this.totalDamage;
 		return newTeam;
 	}
 	
@@ -435,14 +442,17 @@ public class Team {
 		int beacons = 0;
 		int hits = 0;
 		int kills = 0;
+		int damage = 0;
 		for (Ship ship : teamShips) {
 			beacons += ship.getNumBeacons();
 			hits += ship.getHits();
 			kills += ship.getKills();
+			damage += ship.getDamage();
 		}
 		setTotalBeacons(beacons);
 		this.totalKills = kills;
 		this.totalHits = hits;
+		this.totalDamage = damage;
 	}
 	
 	/**
@@ -705,7 +715,14 @@ public class Team {
 		this.totalBeacons++;
 	}
 	
-
+	/**
+	 * Return the total damage inflicted by this team
+	 * @return total damage inflicted by all ships on this team
+	 */
+	public int getTotalDamage() {
+		return totalDamage;
+	}
+	
 	public int getTotalKills() {
 		return totalKills;
 	}

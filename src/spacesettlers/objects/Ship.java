@@ -107,6 +107,7 @@ public class Ship extends AbstractActionableObject {
 		newShip.weaponCapacity = weaponCapacity;
 		newShip.hits = hits;
 		newShip.kills = kills;
+		newShip.damage = damage;
 		return newShip;
 	}
 
