@@ -561,8 +561,8 @@ public class Toroidal2DPhysics {
 					Position newPosition = ship.getPosition();
 					newPosition.setTranslationalVelocity(new Vector2D(0,0));
 					newPosition.setAngularVelocity(0.0);
-					Asteroid newAsteroid = new Asteroid(newPosition, true, ship.getRadius(), true, resources);
-					this.addObject(newAsteroid);
+					//Asteroid newAsteroid = new Asteroid(newPosition, true, ship.getRadius(), true, resources);
+					//this.addObject(newAsteroid);
 				}
 				
 				// set the ship to dead last (so we can grab its resources first)

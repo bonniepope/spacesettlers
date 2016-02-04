@@ -94,7 +94,39 @@
                 <arg line="--simulatorConfigFile SpaceSettlersConfig.xml"/>
                     <arg line="--ladderConfigFile SelfLadderConfig.xml"/>
                     <classpath>
-                        <pathelement location="${dist}/spacewar.jar"/>
+                        <pathelement location="${dist}/spacesettlers.jar"/>
+                    </classpath>
+            </java>
+	</target>
+	
+    <target name="coopLadder" depends="jar-spacesettlers">
+            <java classname="spacesettlers.ladder.RunLadder"
+                  fork="true"
+                  dir="src"
+                      classpath="${dist}/spacesettlers.jar">
+	        <jvmarg value="-Xmx10G" />
+                    <arg line="--graphics false "/>
+		<arg line="--configPath ../config/heuristicCooperative/"/>
+                <arg line="--simulatorConfigFile SpaceSettlersConfig.xml"/>
+                    <arg line="--ladderConfigFile LadderConfig.xml"/>
+                    <classpath>
+                        <pathelement location="${dist}/spacesettlers.jar"/>
+                    </classpath>
+            </java>
+	</target>
+	
+    <target name="competeLadder" depends="jar-spacesettlers">
+            <java classname="spacesettlers.ladder.RunLadder"
+                  fork="true"
+                  dir="src"
+                      classpath="${dist}/spacesettlers.jar">
+	        <jvmarg value="-Xmx10G" />
+                    <arg line="--graphics false "/>
+		<arg line="--configPath ../config/heuristicCompetitive/"/>
+                <arg line="--simulatorConfigFile SpaceSettlersConfig.xml"/>
+                    <arg line="--ladderConfigFile LadderConfig.xml"/>
+                    <classpath>
+                        <pathelement location="${dist}/spacesettlers.jar"/>
                     </classpath>
             </java>
 	</target>

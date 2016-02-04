@@ -116,7 +116,7 @@ public class PacifistHeuristicAsteroidCollectorTeamClient extends TeamClient {
 
 			AbstractAction newAction = null;
 
-			if (asteroid == null) {
+			/*if (asteroid == null) {
 				// there is no asteroid available so collect a beacon
 				Beacon beacon = pickNearestBeacon(space, ship);
 				// if there is no beacon, then just skip a turn
@@ -128,11 +128,16 @@ public class PacifistHeuristicAsteroidCollectorTeamClient extends TeamClient {
 			} else {
 				asteroidToShipMap.put(asteroid.getId(), ship);
 				newAction = new MoveToObjectAction(space, currentPosition, asteroid);
+			}*/
+			if (asteroid != null) {
+				asteroidToShipMap.put(asteroid.getId(), ship);
+				newAction = new MoveToObjectAction(space, currentPosition, asteroid);
 			}
+			
 			return newAction;
-		} else {
-			return ship.getCurrentAction();
-		}
+		} 
+		
+		return ship.getCurrentAction();
 	}
 
 
@@ -213,8 +218,8 @@ public class PacifistHeuristicAsteroidCollectorTeamClient extends TeamClient {
 
 		for (UUID asteroidId : asteroidToShipMap.keySet()) {
 			Asteroid asteroid = (Asteroid) space.getObjectById(asteroidId);
-			if (!asteroid.isAlive()) {
-				finishedAsteroids.add(asteroid);
+			if (asteroid == null || !asteroid.isAlive()) {
+ 				finishedAsteroids.add(asteroid);
 				//System.out.println("Removing asteroid from map");
 			}
 		}
