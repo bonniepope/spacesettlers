@@ -640,7 +640,7 @@ public class SpaceSettlersSimulator {
 				break;
 			case SHIP:
 				// can only buy if there are enough ships
-				if (team.getShips().size() > team.getMaxNumberShips())
+				if (team.getShips().size() >= team.getMaxNumberShips())
 					break;
 				
 				// Ships can only be purchased near a base (which launches them)

@@ -51,10 +51,10 @@ public class JSpaceSettlersComponent extends JComponent {
 		this.height = height;
 		this.width = width;
 
-        setMaximumSize(new Dimension(width, height));
+        //setMaximumSize(new Dimension(width, height));
         setPreferredSize(new Dimension(width, height));
-        setMinimumSize(new Dimension(width, height));
-        setSize(new Dimension(width, height));
+        //setMinimumSize(new Dimension(width, height));
+        //setSize(new Dimension(width, height));
 	}
 
 	/**

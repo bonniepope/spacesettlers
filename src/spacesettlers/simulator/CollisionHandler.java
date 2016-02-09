@@ -72,7 +72,8 @@ public class CollisionHandler {
 		// if it is a ship, give it an energy penalty for running into the object
 		if (object1.getClass() == Ship.class) {
 			shipCollision((Ship) object1);
-		} else if (object2.getClass() == Ship.class) {
+		} 
+		if (object2.getClass() == Ship.class) {
 			shipCollision((Ship) object2);
 		}
 
