@@ -129,20 +129,26 @@ public class AggressiveHeuristicAsteroidCollectorSingletonTeamClient extends Tea
 					// no enemy and no asteroid, just skip this turn (shouldn't happen often)
 					shouldShoot = true;
 					newAction = new DoNothingAction();
+					return newAction;
 				}
 			}
 			
 			// now decide which one to aim for
-			double enemyDistance = space.findShortestDistance(ship.getPosition(), enemy.getPosition());
-			double asteroidDistance = space.findShortestDistance(ship.getPosition(), asteroid.getPosition());
-			
-			// we are aggressive, so aim for enemies if they are nearby
-			if (enemyDistance < asteroidDistance) {
-				shouldShoot = true;
-				newAction = new MoveToObjectAction(space, currentPosition, enemy);
+			if (asteroid != null) {
+				double enemyDistance = space.findShortestDistance(ship.getPosition(), enemy.getPosition());
+				double asteroidDistance = space.findShortestDistance(ship.getPosition(), asteroid.getPosition());
+				
+				// we are aggressive, so aim for enemies if they are nearby
+				if (enemyDistance < asteroidDistance) {
+					shouldShoot = true;
+					newAction = new MoveToObjectAction(space, currentPosition, enemy);
+				} else {
+					shouldShoot = false;
+					newAction = new MoveToObjectAction(space, currentPosition, asteroid);
+				}
+				return newAction;
 			} else {
-				shouldShoot = false;
-				newAction = new MoveToObjectAction(space, currentPosition, asteroid);
+				newAction = new MoveToObjectAction(space, currentPosition, enemy);
 			}
 			return newAction;
 		}
