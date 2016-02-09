@@ -21,8 +21,8 @@ public class Movement {
 	/**
 	 * Maximum accelerations.  If you specific one above (or below the negative), it will set to the max
 	 */
-	static public double MAX_TRANSLATIONAL_ACCELERATION = 50;
-	static public double MAX_ANGULAR_ACCELERATION = Math.PI;
+	static public final double MAX_TRANSLATIONAL_ACCELERATION = 50;
+	static public final double MAX_ANGULAR_ACCELERATION = Math.PI;
 	
 	public Movement() {
 		super();
@@ -47,7 +47,7 @@ public class Movement {
 		}
 		
 		if (translationalAcceleration.getYValue() > MAX_TRANSLATIONAL_ACCELERATION) {
-			this.translationalAcceleration.setY(MAX_ANGULAR_ACCELERATION);
+			this.translationalAcceleration.setY(MAX_TRANSLATIONAL_ACCELERATION);
 		} else if (translationalAcceleration.getYValue() < -MAX_TRANSLATIONAL_ACCELERATION) {
 			this.translationalAcceleration.setY(-MAX_TRANSLATIONAL_ACCELERATION);
 		}
