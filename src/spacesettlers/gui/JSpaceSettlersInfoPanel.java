@@ -42,6 +42,8 @@ public class JSpaceSettlersInfoPanel extends JPanel {
 	public JSpaceSettlersInfoPanel(SpaceSettlersSimulator simulator) {
 		super();
 
+        setPreferredSize(new Dimension(100, 800));
+		
 		constraints = new GridBagConstraints();
 		//constraints.fill = GridBagConstraints.BOTH;
 		constraints.insets = new Insets(10, 10, 10, 10);

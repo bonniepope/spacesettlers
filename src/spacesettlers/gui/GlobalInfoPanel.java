@@ -1,5 +1,6 @@
 package spacesettlers.gui;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,7 +16,6 @@ public class GlobalInfoPanel extends JPanel {
 	JLabel timestepData;
 	
 	public GlobalInfoPanel() {
-        //setPreferredSize(new Dimension(width, height));
         setFont(new Font("SansSerif", Font.PLAIN, 12));
 
 		constraints = new GridBagConstraints();

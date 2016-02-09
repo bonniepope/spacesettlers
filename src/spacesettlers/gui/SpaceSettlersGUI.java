@@ -3,11 +3,13 @@ package spacesettlers.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -61,22 +63,38 @@ public class SpaceSettlersGUI {
 		
 		mainFrame = new JFrame("Space Settlers");
 
+		// get the screen size, code from:
+		// http://stackoverflow.com/questions/3680221/how-can-i-get-the-monitor-size-in-java
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth() - 50;
+		double screenHeight = screenSize.getHeight() - 50;
+		System.out.println("Screen width " + screenWidth);
+		System.out.println("Screen height " + screenHeight);
+		mainFrame.setPreferredSize(new Dimension((int)screenWidth,(int)screenHeight));
+
 		// make the inner panel and components
 		infoPanel = new JSpaceSettlersInfoPanel(simulator);
 		infoPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 		mainComponent = new JSpaceSettlersComponent(config.getHeight(), config.getWidth());
-
+		JScrollPane mainScrollPane = new JScrollPane(mainComponent);
+		//JScrollPane infoScrollPane = new JScrollPane(infoPanel);
+		//infoScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		//infoScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		// put them into the main layout
 		mainFrame.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.weightx = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
+		constraints.gridwidth = GridBagConstraints.RELATIVE;
 		constraints.fill = GridBagConstraints.BOTH;
-		mainFrame.add(mainComponent, constraints);
+		mainFrame.add(mainScrollPane, constraints);
 		
         constraints.gridx = 1;
         constraints.gridy = 0;
+		constraints.weightx = 0.0;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
 		mainFrame.add(infoPanel, constraints);
 		
 		// create a help menu
