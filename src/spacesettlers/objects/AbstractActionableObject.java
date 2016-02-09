@@ -272,6 +272,16 @@ abstract public class AbstractActionableObject extends AbstractObject {
 	public void incrementDamage(int increment) {
 		this.damage += increment;
 	}
+
+	/**
+	 * Get the current set of powerups for the object
+	 * 
+	 * @return current powerups (as a set, there is no order)
+	 */
+	public Set<SpaceSettlersPowerupEnum> getCurrentPowerups() {
+		return currentPowerups;
+	}
+	
 	
 	
 }
